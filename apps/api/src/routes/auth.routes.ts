@@ -4,6 +4,6 @@ import { auth } from "../lib/auth.js";
 
 const router: Router = Router();
 
-router.all("/*splat", toNodeHandler(auth));
+router.all("/*", toNodeHandler(auth));
 
 export default router;
