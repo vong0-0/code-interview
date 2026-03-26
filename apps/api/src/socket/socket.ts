@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import type { Server as HttpServer } from "node:http";
-import { corsOptions } from "../src/config/cors.js";
+import { corsOptions } from "../config/cors.js";
 
 let io: Server;
 
