@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -12,58 +7,25 @@ datasource db {
   provider = "postgresql"
 }
 
-// ── Enums ─────────────────────────────────────────────────
-
-enum RoomStatus {
-  WAITING // รอ Candidate
-  ACTIVE // กำลัง Interview
-  CLOSED // ปิดแล้ว
-}
-
-enum TimerStatus {
-  IDLE
-  RUNNING
-  PAUSED
-  FINISHED
-}
-
-enum ParticipantRole {
-  INTERVIEWER
-  CANDIDATE
-}
-
-enum LeaveReason {
-  LEFT // ออกเอง
-  KICKED // ถูกเตะ
-  CLOSED // ห้องถูกปิด
-}
-
-enum Difficulty {
-  EASY
-  MEDIUM
-  HARD
-}
-
 model User {
   id            String    @id
   name          String
-  email         String
+  email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  sessions      Session[]
   accounts      Account[]
   rooms         Room[]
+  sessions      Session[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -71,7 +33,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -81,7 +42,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -91,6 +51,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -108,104 +69,114 @@ model Verification {
   @@map("verification")
 }
 
-// ── Room ──────────────────────────────────────────────────
-
 model Room {
-  id            String     @id @default(cuid())
-  code          String     @unique // "ABC123" ใช้เข้าห้อง
-  title         String // "Interview - John Doe"
-  interviewerId String
-  language      String     @default("javascript")
-  status        RoomStatus @default(WAITING)
-
-  // Room Expiry
-  roomDuration Int       @default(1800) // วินาที default 30 นาที
-  expiresAt    DateTime? // คำนวณตอนสร้าง
-
-  // Timer
-  timerDuration  Int? // ความยาวเวลา (วินาที)
-  timerStatus    TimerStatus @default(IDLE)
-  timerStartedAt DateTime? // เวลาที่เริ่ม timer
-
-  // Timestamps
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  closedAt  DateTime? // เวลาที่ปิดห้อง
-
-  // Relations
-  interviewer  User              @relation(fields: [interviewerId], references: [id])
-  participants RoomParticipant[]
-  messages     Message[]
-  snapshots    CodeSnapshot[]
-  question     Question?         @relation(fields: [questionId], references: [id])
-  questionId   String?
+  id             String            @id @default(cuid())
+  code           String            @unique
+  title          String
+  interviewerId  String
+  language       String            @default("javascript")
+  status         RoomStatus        @default(WAITING)
+  roomDuration   Int               @default(1800)
+  expiresAt      DateTime?
+  timerDuration  Int?
+  timerStatus    TimerStatus       @default(IDLE)
+  timerStartedAt DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  closedAt       DateTime?
+  questionId     String?
+  snapshots      CodeSnapshot[]
+  messages       Message[]
+  participants   RoomParticipant[]
+  interviewer    User              @relation(fields: [interviewerId], references: [id])
+  question       Question?         @relation(fields: [questionId], references: [id])
 
   @@index([code])
   @@index([interviewerId])
   @@map("rooms")
 }
 
-// ── Room Participant ──────────────────────────────────────
-
 model RoomParticipant {
   id          String          @id @default(cuid())
   roomId      String
-  name        String // snapshot ชื่อ ณ เวลานั้น
+  name        String
   role        ParticipantRole
   joinedAt    DateTime        @default(now())
-  leftAt      DateTime? // เวลาที่ออกหรือถูกเตะ
+  leftAt      DateTime?
   isActive    Boolean         @default(true)
-  leaveReason LeaveReason? // null = ยังอยู่ในห้อง
-
-  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  leaveReason LeaveReason?
+  userId      String?
+  room        Room            @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@index([roomId])
+  @@index([userId])
   @@map("room_participants")
 }
-
-// ── Message (Chat) ────────────────────────────────────────
 
 model Message {
   id         String   @id @default(cuid())
   roomId     String
-  senderName String // snapshot ชื่อ ณ เวลานั้น
-  content    String   @db.Text
+  senderName String
+  content    String
   createdAt  DateTime @default(now())
-
-  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room       Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@index([roomId])
   @@map("messages")
 }
 
-// ── Question Bank ─────────────────────────────────────────
-
 model Question {
   id          String     @id @default(cuid())
   title       String
-  description String     @db.Text
+  description String
   difficulty  Difficulty
-  language    String? // null = ใช้ได้ทุกภาษา
-  starterCode String?    @db.Text // code เริ่มต้น
-  solution    String?    @db.Text // เฉลย Interviewer เห็นอย่างเดียว
+  language    String?
+  starterCode String?
+  solution    String?
   createdAt   DateTime   @default(now())
-
-  rooms Room[]
+  rooms       Room[]
 
   @@map("questions")
 }
 
-// ── Code Snapshot ─────────────────────────────────────────
-
 model CodeSnapshot {
   id       String   @id @default(cuid())
   roomId   String
-  code     String   @db.Text
+  code     String
   language String
   savedAt  DateTime @default(now())
-
-  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  room     Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
   @@index([roomId, savedAt])
   @@map("code_snapshots")
+}
+
+enum RoomStatus {
+  WAITING
+  ACTIVE
+  CLOSED
+}
+
+enum TimerStatus {
+  IDLE
+  RUNNING
+  PAUSED
+  FINISHED
+}
+
+enum ParticipantRole {
+  INTERVIEWER
+  CANDIDATE
+}
+
+enum LeaveReason {
+  LEFT
+  KICKED
+  CLOSED
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
 }
