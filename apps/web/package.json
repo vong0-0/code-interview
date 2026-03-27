@@ -1,5 +1,5 @@
 {
-  "name": "@code-inverview/web",
+  "name": "@code-interview/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,8 +12,8 @@
     "next": "16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "@code-inverview/types": "workspace:*",
-    "@code-inverview/utils": "workspace:*"
+    "@code-interview/types": "workspace:*",
+    "@code-interview/utils": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -1,5 +1,5 @@
 {
-  "name": "@code-inverview/api",
+  "name": "@code-interview/api",
   "version": "0.0.1",
   "private": true,
   "type": "module",
@@ -10,8 +10,8 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
-    "@code-inverview/types": "workspace:*",
-    "@code-inverview/utils": "workspace:*",
+    "@code-interview/types": "workspace:*",
+    "@code-interview/utils": "workspace:*",
     "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "cors": "^2.8.6",
