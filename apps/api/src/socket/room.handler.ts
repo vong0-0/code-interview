@@ -1,10 +1,11 @@
 import type { Server, Socket } from "socket.io";
+import logger from "../lib/logger";
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
-  console.log(`[Socket] connected: ${socket.id}`);
+  logger.info(`[Socket] connected: ${socket.id}`);
 
   socket.on("disconnect", () => {
-    console.log(`[Socket] disconnected: ${socket.id}`);
+    logger.info(`[Socket] disconnected: ${socket.id}`);
   });
 }
 
