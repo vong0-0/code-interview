@@ -103,7 +103,7 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
 
         io.to(roomCode).emit("room:user-left", {
           participantId,
-          role: socket.data.user ? "INTERVIEWER" : "CANDIDATE",
+          role: socket.data.role,
         })
 
         logger.info(
@@ -136,7 +136,7 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
 
       io.to(roomCode).emit("room:user-left", {
         participantId,
-        role: socket.data.user ? "INTERVIEWER" : "CANDIDATE",
+        role: socket.data.role,
       })
 
       logger.info(
