@@ -7,13 +7,9 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
 
   socket.on(
     "room:join",
-    async (payload: {
-      roomCode: string
-      name?: string
-      role: "INTERVIEWER" | "CANDIDATE"
-    }) => {
+    async (payload: { roomCode: string; name?: string }) => {
       try {
-        const { roomCode, name, role } = payload
+        const { roomCode, name } = payload
 
         const room = await db.room.findUnique({
           where: { code: roomCode },
@@ -58,6 +54,7 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
         socket.data.roomCode = roomCode
         socket.data.participantId = participant.id
         socket.data.role = actualRole
+        socket.data.name = participantName
 
         io.to(roomCode).emit("room:user-joined", {
           participantId: participant.id,
@@ -112,6 +109,58 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
       } catch (err) {
         logger.error({ err }, "[Socket] room:leave error")
         socket.emit("room:error", { message: "Failed to leave room" })
+      }
+    }
+  )
+
+  socket.on(
+    "chat:message",
+    async (payload: { roomCode: string; content: string }) => {
+      try {
+        const { roomCode, content } = payload
+        console.log("[Socket] chat:message", payload)
+
+        if (socket.data.roomCode !== roomCode) {
+          socket.emit("room:error", { message: "You are not in this room" })
+          return
+        }
+
+        if (!content?.trim()) {
+          socket.emit("room:error", { message: "Content is required" })
+          return
+        }
+
+        const room = await db.room.findUnique({
+          where: { code: roomCode },
+        })
+
+        if (!room) {
+          socket.emit("room:error", { message: "Room not found" })
+          return
+        }
+
+        const message = await db.message.create({
+          data: {
+            roomId: room.id,
+            senderName: socket.data.name ?? "Guest",
+            userId: socket.data.user?.id ?? null,
+            content: content.trim(),
+          },
+        })
+
+        io.to(roomCode).emit("chat:message:received", {
+          id: message.id,
+          senderName: message.senderName,
+          content: message.content,
+          createdAt: message.createdAt,
+        })
+
+        logger.debug(
+          `[Socket] chat:message in room ${roomCode} by ${message.senderName}`
+        )
+      } catch (err) {
+        logger.error({ err }, "[Socket] chat:message error")
+        socket.emit("room:error", { message: "Failed to send message" })
       }
     }
   )
