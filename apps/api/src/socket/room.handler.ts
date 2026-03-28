@@ -55,6 +55,9 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
         })
 
         await socket.join(roomCode)
+        socket.data.roomCode = roomCode
+        socket.data.participantId = participant.id
+        socket.data.role = actualRole
 
         io.to(roomCode).emit("room:user-joined", {
           participantId: participant.id,
@@ -78,8 +81,70 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
     }
   )
 
-  socket.on("disconnect", () => {
+  socket.on(
+    "room:leave",
+    async (payload: { roomCode: string; participantId: string }) => {
+      try {
+        const { roomCode, participantId } = payload
+
+        if (!roomCode || !participantId) {
+          socket.emit("room:error", {
+            message: "roomCode and participantId are required",
+          })
+          return
+        }
+
+        await db.roomParticipant.update({
+          where: { id: participantId },
+          data: { isActive: false, leftAt: new Date(), leaveReason: "LEFT" },
+        })
+
+        await socket.leave(roomCode)
+
+        io.to(roomCode).emit("room:user-left", {
+          participantId,
+          role: socket.data.user ? "INTERVIEWER" : "CANDIDATE",
+        })
+
+        logger.info(
+          `[Socket] participantId: ${participantId} left room ${roomCode}`
+        )
+      } catch (err) {
+        logger.error({ err }, "[Socket] room:leave error")
+        socket.emit("room:error", { message: "Failed to leave room" })
+      }
+    }
+  )
+
+  socket.on("disconnect", async () => {
     logger.info(`[Socket] disconnected: ${socket.id}`)
+
+    const { roomCode, participantId } = socket.data
+
+    // ถ้าไม่มีข้อมูลแปลว่ายังไม่ได้ join room
+    if (!roomCode || !participantId) return
+
+    try {
+      await db.roomParticipant.update({
+        where: { id: participantId },
+        data: {
+          isActive: false,
+          leftAt: new Date(),
+          leaveReason: "LEFT",
+        },
+      })
+
+      io.to(roomCode).emit("room:user-left", {
+        participantId,
+        role: socket.data.user ? "INTERVIEWER" : "CANDIDATE",
+      })
+
+      logger.info(
+        `[Socket] participantId: ${participantId} disconnected from room ${roomCode}`
+      )
+    } catch (err) {
+      logger.error({ err }, "[Socket] disconnect cleanup error")
+    }
   })
 }
 
