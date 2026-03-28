@@ -1,6 +1,8 @@
 import type { Server, Socket } from "socket.io"
 import logger from "../lib/logger"
 import { prisma as db } from "../lib/prisma.js"
+import { registerChatHandlers } from "./chat.handler"
+import { idText } from "typescript"
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
   logger.info(`[Socket] connected: ${socket.id}`)
@@ -113,58 +115,6 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
     }
   )
 
-  socket.on(
-    "chat:message",
-    async (payload: { roomCode: string; content: string }) => {
-      try {
-        const { roomCode, content } = payload
-        console.log("[Socket] chat:message", payload)
-
-        if (socket.data.roomCode !== roomCode) {
-          socket.emit("room:error", { message: "You are not in this room" })
-          return
-        }
-
-        if (!content?.trim()) {
-          socket.emit("room:error", { message: "Content is required" })
-          return
-        }
-
-        const room = await db.room.findUnique({
-          where: { code: roomCode },
-        })
-
-        if (!room) {
-          socket.emit("room:error", { message: "Room not found" })
-          return
-        }
-
-        const message = await db.message.create({
-          data: {
-            roomId: room.id,
-            senderName: socket.data.name ?? "Guest",
-            userId: socket.data.user?.id ?? null,
-            content: content.trim(),
-          },
-        })
-
-        io.to(roomCode).emit("chat:message:received", {
-          id: message.id,
-          senderName: message.senderName,
-          content: message.content,
-          createdAt: message.createdAt,
-        })
-
-        logger.debug(
-          `[Socket] chat:message in room ${roomCode} by ${message.senderName}`
-        )
-      } catch (err) {
-        logger.error({ err }, "[Socket] chat:message error")
-        socket.emit("room:error", { message: "Failed to send message" })
-      }
-    }
-  )
-
   socket.on("disconnect", async () => {
     logger.info(`[Socket] disconnected: ${socket.id}`)
 
@@ -200,5 +150,6 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
 export function initRoomHandlers(io: Server) {
   io.on("connection", (socket) => {
     registerRoomHandlers(io, socket)
+    registerChatHandlers(io, socket)
   })
 }
