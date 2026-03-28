@@ -1,6 +1,7 @@
 import type { Server, Socket } from "socket.io"
 import logger from "../lib/logger"
 import { prisma as db } from "../lib/prisma.js"
+import { registerCodeHandlers } from "./code.handler"
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
   logger.info(`[Socket] connected: ${socket.id}`)
@@ -116,24 +117,6 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
     }
   )
 
-  socket.on("code:change", (payload: { roomCode: string; content: string }) => {
-    const { roomCode, content } = payload
-
-    if (socket.data.roomCode !== roomCode) {
-      socket.emit("room:error", { message: "You are not in this room" })
-      return
-    }
-
-    socket.to(roomCode).emit("code:changed", {
-      content,
-      by: socket.data.participantId,
-    })
-
-    logger.debug(
-      `[Socket] code:change in room ${roomCode} by ${socket.data.participantId}`
-    )
-  })
-
   socket.on("disconnect", async () => {
     logger.info(`[Socket] disconnected: ${socket.id}`)
 
@@ -169,5 +152,6 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
 export function initRoomHandlers(io: Server) {
   io.on("connection", (socket) => {
     registerRoomHandlers(io, socket)
+    registerCodeHandlers(io, socket)
   })
 }
