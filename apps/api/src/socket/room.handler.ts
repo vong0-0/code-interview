@@ -1,6 +1,7 @@
 import type { Server, Socket } from "socket.io"
 import logger from "../lib/logger"
 import { prisma as db } from "../lib/prisma.js"
+import { registerSnapshotHandlers } from "./snapshot.handler"
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
   logger.info(`[Socket] connected: ${socket.id}`)
@@ -17,7 +18,10 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
 
         const room = await db.room.findUnique({
           where: { code: roomCode },
-          include: { participants: { where: { isActive: true } } },
+          include: {
+            participants: { where: { isActive: true } },
+            question: true,
+          },
         })
 
         if (!room) {
@@ -34,6 +38,12 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
           socket.emit("room:error", { message: "Room is full" })
           return
         }
+
+        const snapshot = await db.codeSnapshot.findFirst({
+          where: { roomId: room.id, language: room.language },
+          orderBy: { savedAt: "desc" },
+        })
+
         const userId = socket.data.user?.id ?? null
         const actualRole =
           userId && userId === room.interviewerId ? "INTERVIEWER" : "CANDIDATE"
@@ -71,6 +81,8 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
           participantId: participant.id,
           name: participantName,
           role: actualRole,
+          language: room.language,
+          lastCode: snapshot?.code ?? room.question?.starterCode ?? null,
         })
 
         console.log(`[Socket] ${participantName} joined room ${roomCode}`)
@@ -156,5 +168,6 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
 export function initRoomHandlers(io: Server) {
   io.on("connection", (socket) => {
     registerRoomHandlers(io, socket)
+    registerSnapshotHandlers(io, socket)
   })
 }
