@@ -94,6 +94,11 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
           return
         }
 
+        if (socket.data.roomCode !== roomCode) {
+          socket.emit("room:error", { message: "You are not in this room" })
+          return
+        }
+
         await db.roomParticipant.update({
           where: { id: participantId },
           data: { isActive: false, leftAt: new Date(), leaveReason: "LEFT" },
