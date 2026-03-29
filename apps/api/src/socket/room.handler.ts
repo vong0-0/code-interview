@@ -2,19 +2,16 @@ import type { Server, Socket } from "socket.io"
 import logger from "../lib/logger"
 import { prisma as db } from "../lib/prisma.js"
 import { registerCodeHandlers } from "./code.handler"
+import { registerChatHandlers } from "./chat.handler"
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
   logger.info(`[Socket] connected: ${socket.id}`)
 
   socket.on(
     "room:join",
-    async (payload: {
-      roomCode: string
-      name?: string
-      role: "INTERVIEWER" | "CANDIDATE"
-    }) => {
+    async (payload: { roomCode: string; name?: string }) => {
       try {
-        const { roomCode, name, role } = payload
+        const { roomCode, name } = payload
 
         const room = await db.room.findUnique({
           where: { code: roomCode },
@@ -59,6 +56,7 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
         socket.data.roomCode = roomCode
         socket.data.participantId = participant.id
         socket.data.role = actualRole
+        socket.data.name = participantName
 
         io.to(roomCode).emit("room:user-joined", {
           participantId: participant.id,
@@ -158,5 +156,6 @@ export function initRoomHandlers(io: Server) {
   io.on("connection", (socket) => {
     registerRoomHandlers(io, socket)
     registerCodeHandlers(io, socket)
+    registerChatHandlers(io, socket)
   })
 }
