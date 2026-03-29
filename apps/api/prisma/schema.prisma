@@ -75,7 +75,7 @@ model Room {
   title          String
   interviewerId  String
   language       String            @default("javascript")
-  status         RoomStatus        @default(WAITING)
+  status         RoomStatus        @default(OPEN)
   roomDuration   Int               @default(1800)
   expiresAt      DateTime?
   timerDuration  Int?
@@ -154,8 +154,7 @@ model CodeSnapshot {
 }
 
 enum RoomStatus {
-  WAITING
-  ACTIVE
+  OPEN
   CLOSED
 }
 
