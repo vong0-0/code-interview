@@ -1,6 +1,7 @@
 import type { Server, Socket } from "socket.io"
 import logger from "../lib/logger"
 import { prisma as db } from "../lib/prisma.js"
+import { registerCodeHandlers } from "./code.handler"
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
   logger.info(`[Socket] connected: ${socket.id}`)
@@ -156,5 +157,6 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
 export function initRoomHandlers(io: Server) {
   io.on("connection", (socket) => {
     registerRoomHandlers(io, socket)
+    registerCodeHandlers(io, socket)
   })
 }
