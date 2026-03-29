@@ -3,6 +3,7 @@ import logger from "../lib/logger"
 import { prisma as db } from "../lib/prisma.js"
 import { registerCodeHandlers } from "./code.handler"
 import { registerChatHandlers } from "./chat.handler"
+import { registerTimerHandlers } from "./timer.handler"
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
   logger.info(`[Socket] connected: ${socket.id}`)
@@ -157,5 +158,6 @@ export function initRoomHandlers(io: Server) {
     registerRoomHandlers(io, socket)
     registerCodeHandlers(io, socket)
     registerChatHandlers(io, socket)
+    registerTimerHandlers(io, socket)
   })
 }
