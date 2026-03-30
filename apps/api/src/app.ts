@@ -6,6 +6,7 @@ import { corsOptions } from "./config/cors.js"
 import authRoutes from "./routes/auth.routes.js"
 import meRoutes from "./routes/me.routes.js"
 import roomRoutes from "./routes/rooms.routes.js"
+import questionRoutes from "./routes/questons.routes.js"
 
 const app: Express = express()
 
@@ -19,5 +20,6 @@ app.use(`${API_PREFIX}/me`, meRoutes)
 app.use(express.json())
 
 app.use(`${API_PREFIX}/rooms`, roomRoutes)
+app.use(`${API_PREFIX}/questions`, questionRoutes)
 
 export default app
