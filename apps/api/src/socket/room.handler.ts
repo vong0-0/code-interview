@@ -28,7 +28,10 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
           return
         }
 
-        if (room.status === "CLOSED") {
+        if (
+          room.status === "CLOSED" &&
+          room.interviewerId !== socket.data.user?.id
+        ) {
           socket.emit("room:error", { message: "Room is closed" })
           return
         }
