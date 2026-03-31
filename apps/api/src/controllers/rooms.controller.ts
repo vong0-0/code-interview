@@ -135,8 +135,12 @@ export async function updateRoom(req: Request, res: Response) {
       },
     })
 
-    // broadcast เฉพาะตอนปิดห้อง
     if (status === "CLOSED") {
+      await db.roomParticipant.updateMany({
+        where: { roomId: room.id, isActive: true },
+        data: { isActive: false, leftAt: new Date(), leaveReason: "CLOSED" },
+      })
+
       const { getIO } = await import("../socket/socket.js")
       getIO()
         .to(code)
