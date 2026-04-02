@@ -6,9 +6,16 @@ import { validateRequiredFields } from "../utils/validate-fields.js"
 export async function getRooms(req: Request, res: Response) {
   try {
     const userId = req.user.id
+    const { search, status } = req.query
 
     const rooms = await db.room.findMany({
-      where: { interviewerId: userId },
+      where: {
+        interviewerId: userId,
+        ...(status && { status: status as "OPEN" | "CLOSED" }),
+        ...(search && {
+          title: { contains: search as string, mode: "insensitive" },
+        }),
+      },
       orderBy: { createdAt: "desc" },
       select: {
         code: true,

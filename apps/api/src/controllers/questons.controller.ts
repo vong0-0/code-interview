@@ -4,7 +4,7 @@ import { prisma as db } from "../lib/prisma.js"
 export async function getQuestions(req: Request, res: Response) {
   try {
     const userId = req.user.id
-    const { difficulty, language, visibility = "all" } = req.query
+    const { difficulty, visibility = "all", search } = req.query
 
     if (!["public", "private", "all"].includes(visibility as string)) {
       res
@@ -26,7 +26,9 @@ export async function getQuestions(req: Request, res: Response) {
         ...(difficulty && {
           difficulty: difficulty as "EASY" | "MEDIUM" | "HARD",
         }),
-        ...(language && { language: language as string }),
+        ...(search && {
+          title: { contains: search as string, mode: "insensitive" },
+        }),
       },
       orderBy: { createdAt: "desc" },
       select: {
