@@ -127,7 +127,7 @@
   --border-subtle: #3f3f46;
   --input: #111113;
   --ring: #3b82f6;
-  --muted: #111113;
+  --muted: #1a1a1d;
   --muted-foreground: #acacb0;
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
@@ -167,6 +167,6 @@
   }
 
   .section-container {
-    @apply w-full max-w-9xl px-4 md:px-6 py-10;
+    @apply w-full max-w-9xl px-4 md:px-6 py-10 md:py-20;
   }
 }
