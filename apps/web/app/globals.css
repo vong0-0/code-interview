@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme inline {
   --color-background: var(--background);
@@ -98,7 +98,7 @@
   --border-subtle: #e4e4e7;
   --input: #ffffff;
   --ring: #2563eb;
-  --muted: #f4f4f5;
+  --muted: rgb(232, 228, 228);
   --muted-foreground: #71717a;
   --primary: #2563eb;
   --primary-foreground: #ffffff;
@@ -128,7 +128,7 @@
   --input: #111113;
   --ring: #3b82f6;
   --muted: #111113;
-  --muted-foreground: #71717a;
+  --muted-foreground: #acacb0;
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
   --destructive: #ef4444;
