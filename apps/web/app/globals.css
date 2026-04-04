@@ -118,7 +118,7 @@
 }
 
 /* ── Dark Mode ── */
-.dark {
+[data-theme='dark'] {
   --background: #09090b;
   --foreground: #fafafa;
   --card: #1c1c1f;
