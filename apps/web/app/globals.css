@@ -118,7 +118,7 @@
 }
 
 /* ── Dark Mode ── */
-[data-theme='dark'] {
+[data-theme="dark"] {
   --background: #09090b;
   --foreground: #fafafa;
   --card: #1c1c1f;
@@ -158,5 +158,15 @@
   }
   button {
     @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .section-container {
+    @apply w-full max-w-9xl px-4 md:px-6 py-10;
   }
 }
