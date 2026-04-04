@@ -88,7 +88,11 @@ function SiteHeaderRoot({
       data-slot="site-header"
       className={cn(headerVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      <div className="relative mx-auto flex w-full max-w-9xl items-center">
+        {props.children}
+      </div>
+    </Comp>
   );
 }
 
