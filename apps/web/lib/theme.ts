@@ -1,8 +1,36 @@
+import { useEffect, useState } from "react";
+
 export type Theme = "light" | "dark" | "system";
 
 export function getTheme(): Theme {
   if (typeof window === "undefined") return "system";
   return (localStorage.getItem("theme") as Theme) ?? "system";
+}
+
+export function useTheme() {
+  const [theme, setThemeState] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    // initial value
+    const root = document.documentElement;
+    const current = root.getAttribute("data-theme") as "light" | "dark";
+    if (current) setThemeState(current);
+
+    // observer
+    const observer = new MutationObserver(() => {
+      const updated = root.getAttribute("data-theme") as "light" | "dark";
+      if (updated) setThemeState(updated);
+    });
+
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
 }
 
 export function setTheme(theme: Theme) {
@@ -19,8 +47,9 @@ export function setTheme(theme: Theme) {
     root.setAttribute("data-theme", theme);
   }
 }
-
+// ... rest of initTheme stays the same ...
 export function initTheme() {
+  if (typeof window === "undefined") return;
   const stored = localStorage.getItem("theme") as Theme | null;
 
   if (stored === "dark" || stored === "light") {
@@ -28,14 +57,12 @@ export function initTheme() {
     return;
   }
 
-  // system preference
   const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   document.documentElement.setAttribute(
     "data-theme",
     systemDark ? "dark" : "light",
   );
 
-  // listen for system preference changes
   window
     .matchMedia("(prefers-color-scheme: dark)")
     .addEventListener("change", (e) => {
