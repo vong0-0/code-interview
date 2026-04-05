@@ -18,6 +18,7 @@ import {
 import { FadeIn } from "@/components/common/fade-in";
 import { Code, MessageSquareText, Timer } from "lucide-react";
 import { FeatureCard } from "@/components/common/feature-card";
+import { StepList } from "@/components/common/step-flow";
 
 export default function Page() {
   const theme = useTheme();
@@ -26,7 +27,73 @@ export default function Page() {
     <>
       <HeroSection theme={theme} />
       <FeaturesSection />
+      <HowItWorksSection />
     </>
+  );
+}
+
+function HowItWorksSection() {
+  const interviewerSteps = [
+    {
+      title: "Sign in",
+      description: "Access your dashboard with GitHub or Google.",
+    },
+    {
+      title: "Create a room",
+      description: "Generate a unique session link in one click.",
+    },
+    {
+      title: "Share code",
+      description: "Send the room code to your candidate.",
+    },
+    { title: "Start", description: "Begin the live technical assessment." },
+  ];
+
+  const candidateSteps = [
+    {
+      title: "Receive code",
+      description: "Get the session invite from your interviewer.",
+    },
+    {
+      title: "Enter code",
+      description: "No account required. Just enter the code.",
+    },
+    {
+      title: "Type name",
+      description: "Identify yourself before entering the room.",
+    },
+    { title: "Start", description: "Join the session and show your skills." },
+  ];
+  return (
+    <section id="how-it-works-section">
+      <div className="section-container min-h-[600px] flex flex-col justify-center">
+        <SectionLabel className="text-start">how it works</SectionLabel>
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="space-y-9">
+            <div className="w-fit relative">
+              <h2
+                className={cn(jetbrainsMono.className, "text-2xl font-medium")}
+              >
+                Interviewer
+              </h2>
+              <div className="absolute top-1/2 -translate-y-1/2 -right-[110%] w-full h-px bg-muted-foreground"></div>
+            </div>
+            <StepList steps={interviewerSteps} />
+          </div>
+          <div className="space-y-9">
+            <div className="w-fit relative">
+              <h2
+                className={cn(jetbrainsMono.className, "text-2xl font-medium")}
+              >
+                Candidate
+              </h2>
+              <div className="absolute top-1/2 -translate-y-1/2 -right-[110%] w-full h-px bg-muted-foreground"></div>
+            </div>
+            <StepList steps={candidateSteps} />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
