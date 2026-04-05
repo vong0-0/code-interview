@@ -18,7 +18,7 @@ export default function RootLayout({
 
   return (
     <>
-      <SiteHeader className="bg-white dark:bg-black">
+      <SiteHeader variant={"transparent"} className="bg-white dark:bg-black">
         {/* Logo */}
         <SiteHeader.Start>
           <div
