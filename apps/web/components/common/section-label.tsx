@@ -15,7 +15,10 @@ export function SectionLabel({ children, className }: SectionLabelProps) {
         className,
       )}
     >
-      <span className="text-primary">//{children}</span>
+      <span className="text-primary">
+        {"//"}
+        {children}
+      </span>
     </p>
   );
 }

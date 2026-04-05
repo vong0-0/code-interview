@@ -8,14 +8,17 @@ export function getTheme(): Theme {
 }
 
 export function useTheme() {
-  const [theme, setThemeState] = useState<"light" | "dark">("light");
+  const [theme, setThemeState] = useState<"light" | "dark">(() => {
+    if (typeof window === "undefined") return "light";
+    return (
+      (document.documentElement.getAttribute("data-theme") as
+        | "light"
+        | "dark") ?? "light"
+    );
+  });
 
   useEffect(() => {
-    // initial value
     const root = document.documentElement;
-    const current = root.getAttribute("data-theme") as "light" | "dark";
-    if (current) setThemeState(current);
-
     // observer
     const observer = new MutationObserver(() => {
       const updated = root.getAttribute("data-theme") as "light" | "dark";
