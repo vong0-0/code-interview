@@ -15,13 +15,69 @@ import {
   registerThemes,
 } from "@/lib/monaco-themes";
 
+import { FadeIn } from "@/components/common/fade-in";
+import { Code, MessageSquareText, Timer } from "lucide-react";
+import { FeatureCard } from "@/components/common/feature-card";
+
 export default function Page() {
   const theme = useTheme();
 
   return (
     <>
       <HeroSection theme={theme} />
+      <FeaturesSection />
     </>
+  );
+}
+
+function FeaturesSection() {
+  const features = [
+    {
+      index: "01",
+      title: "Real-time Code Editor",
+      description:
+        "Industry-standard Monaco editor with syntax highlighting, auto-complete, and multi-cursor support for seamless collaboration.",
+      icon: Code,
+    },
+    {
+      index: "02",
+      title: "Built-in Timer",
+      description:
+        "Keep track of interview duration with a synced countdown. Pause, resume, and extend time with a single click.",
+      icon: Timer,
+    },
+    {
+      index: "03",
+      title: "Live Chat",
+      description:
+        "Communicate instantly with an integrated chat panel. Perfect for clarifying requirements and providing hints.",
+      icon: MessageSquareText,
+    },
+  ];
+
+  return (
+    <section id="features-section">
+      <div className="section-container min-h-[600px] flex flex-col justify-center bg-white dark:bg-black">
+        <SectionLabel className="text-start">features</SectionLabel>
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((feature, idx) => (
+            <FadeIn
+              key={feature.index}
+              delay={idx * 150}
+              direction="up"
+              offset={20}
+            >
+              <FeatureCard
+                icon={feature.icon}
+                index={feature.index}
+                title={feature.title}
+                description={feature.description}
+              />
+            </FadeIn>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
