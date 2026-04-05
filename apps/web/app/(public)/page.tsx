@@ -1,6 +1,6 @@
 "use client";
 
-import { JoinRoomButton } from "@/components/common/buttons";
+import { GetStartedButton, JoinRoomButton } from "@/components/common/buttons";
 import { SectionLabel } from "@/components/common/section-label";
 import { Input } from "@/components/ui/input";
 import { jetbrainsMono } from "@/lib/fonts";
@@ -19,6 +19,7 @@ import { FadeIn } from "@/components/common/fade-in";
 import { Code, MessageSquareText, Timer } from "lucide-react";
 import { FeatureCard } from "@/components/common/feature-card";
 import { StepList } from "@/components/common/step-flow";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const theme = useTheme();
@@ -28,7 +29,30 @@ export default function Page() {
       <HeroSection theme={theme} />
       <FeaturesSection />
       <HowItWorksSection />
+      <CtaSection />
     </>
+  );
+}
+
+function CtaSection() {
+  return (
+    <section id="cta-section">
+      <div className="section-container flex-center flex-col gap-8 bg-white dark:bg-black">
+        <h2
+          className={cn(
+            jetbrainsMono.className,
+            "text-center relative text-3xl font-medium tracking-tight text-foreground sm:text-4xl md:text-5xl",
+          )}
+        >
+          Ready to run your first interview?
+        </h2>
+
+        {/* CTA button */}
+        <Button className="bg-foreground text-background h-auto px-6 py-3 text-base font-medium rounded-sm hover:bg-foreground/80 transition-colors duration-300">
+          Start Interviewing Now
+        </Button>
+      </div>
+    </section>
   );
 }
 
