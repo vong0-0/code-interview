@@ -2,10 +2,10 @@ import { cn } from "@/lib/utils";
 import { jetbrainsMono } from "@/lib/fonts";
 
 const footerLinks = [
-  { label: "Documentation", href: "#" },
-  { label: "System Status", href: "#" },
-  { label: "Privacy", href: "#" },
-  { label: "Terms", href: "#" },
+  { label: "Home", href: "/" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Question Bank", href: "/question-bank" },
+  { label: "Sign In", href: "/sign-in" },
 ];
 
 interface SiteFooterProps {
