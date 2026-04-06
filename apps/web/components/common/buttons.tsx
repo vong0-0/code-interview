@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export function GetStartedButton({ className }: { className?: string }) {
   return (
@@ -19,8 +20,9 @@ export function SignInButton({ className }: { className?: string }) {
     <Button
       variant={"ghost"}
       className={cn("text-muted-foreground font-semibold", className)}
+      asChild
     >
-      Sign In
+      <Link href={"/sign-in"}>Sign In</Link>
     </Button>
   );
 }
