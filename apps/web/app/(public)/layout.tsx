@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/common/theme-toggle";
 import { jetbrainsMono } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 export default function RootLayout({
@@ -21,7 +22,8 @@ export default function RootLayout({
       <SiteHeader variant={"transparent"} className="bg-white dark:bg-black">
         {/* Logo */}
         <SiteHeader.Start>
-          <div
+          <Link
+            href={"/"}
             className={cn(
               jetbrainsMono.className,
               "text-lg font-bold tracking-tight",
@@ -29,7 +31,7 @@ export default function RootLayout({
           >
             <span className="dark:text-white">Code</span>
             <span className="text-primary">Interview</span>
-          </div>
+          </Link>
         </SiteHeader.Start>
         {/* Desktop nav */}
         <SiteHeader.End className="gap-2 md:gap-4">
