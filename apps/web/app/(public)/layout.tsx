@@ -8,6 +8,7 @@ import { jetbrainsMono } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 export default function RootLayout({
@@ -16,6 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const isLandingPage = pathname === "/";
 
   return (
     <>
@@ -38,7 +41,20 @@ export default function RootLayout({
           <ThemeToggle />
           <div className="hidden md:flex items-center gap-4">
             <SignInButton />
-            <GetStartedButton />
+            {isLandingPage && (
+              <GetStartedButton
+                onClick={() => {
+                  const input = document.getElementById("room-code-input");
+                  if (input) {
+                    input.focus();
+                    input.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    });
+                  }
+                }}
+              />
+            )}
           </div>
 
           {/* Hamburger — mobile only */}
@@ -56,7 +72,23 @@ export default function RootLayout({
       {mobileMenuOpen && (
         <div className="md:hidden flex flex-col gap-2 border-b border-border bg-background/95 px-4 py-4 backdrop-blur-lg">
           <SignInButton />
-          <GetStartedButton />
+          {isLandingPage && (
+            <GetStartedButton
+              onClick={() => {
+                setMobileMenuOpen(false);
+                setTimeout(() => {
+                  const input = document.getElementById("room-code-input");
+                  if (input) {
+                    input.focus();
+                    input.scrollIntoView({
+                      behavior: "smooth",
+                      block: "center",
+                    });
+                  }
+                }, 100);
+              }}
+            />
+          )}
         </div>
       )}
       {children}

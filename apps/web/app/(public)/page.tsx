@@ -201,7 +201,10 @@ function HeroSection({ theme }: { theme: "light" | "dark" }) {
           </p>
 
           <div className="flex flex-col gap-2 md:flex-row max-w-xl w-full mx-auto md:mx-0">
-            <Input placeholder="Enter room code (e.g. ABC-123)" />
+            <Input
+              id="room-code-input"
+              placeholder="Enter room code (e.g. ABC-123)"
+            />
             <JoinRoomButton className="md:w-auto md:text-nowrap" />
           </div>
 
