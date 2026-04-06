@@ -1,3 +1,7 @@
+"use client";
+
+import { GetStartedButton, SignInButton } from "@/components/common/buttons";
+import { SiteFooter } from "@/components/common/site-footer";
 import { SiteHeader } from "@/components/common/site-header";
 
 export default function RootLayout({
@@ -15,6 +19,7 @@ export default function RootLayout({
         </div>
       </SiteHeader>
       {children}
+      <SiteFooter />
     </>
   );
 }
