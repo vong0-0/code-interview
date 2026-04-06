@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { FcGoogle } from "react-icons/fc";
 
 export function GetStartedButton({
   className,
@@ -49,5 +50,23 @@ export function JoinRoomButton({
     >
       Join Room
     </button>
+  );
+}
+
+export function GoogleSignInButton({
+  className,
+  ...props
+}: React.ComponentProps<typeof Button>) {
+  return (
+    <Button
+      {...props}
+      className={cn(
+        "h-auto space-x-1 text-foreground bg-white dark:bg-black border-2 border-border px-2 py-2 rounded-sm w-full text-sm hover:bg-background transition-all duration-300",
+        className,
+      )}
+    >
+      <FcGoogle className="size-5" />
+      <p>Continue with Google</p>
+    </Button>
   );
 }
