@@ -20,6 +20,7 @@ import { Code, MessageSquareText, Timer } from "lucide-react";
 import { FeatureCard } from "@/components/common/feature-card";
 import { StepList } from "@/components/common/step-flow";
 import { Button } from "@/components/ui/button";
+import { EditorSkeleton } from "@/components/common/skeletons/editor-skeleton";
 
 export default function Page() {
   const theme = useTheme();
@@ -232,6 +233,7 @@ function HeroSection({ theme }: { theme: "light" | "dark" }) {
             </div>
 
             <Editor
+              loading={<EditorSkeleton />}
               height="300px"
               className="overflow-hidden rounded-b-lg border-t border-border/20"
               defaultLanguage="python"
