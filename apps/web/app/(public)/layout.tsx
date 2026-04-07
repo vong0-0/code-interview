@@ -87,20 +87,23 @@ export default function RootLayout({
               </>
             ) : (
               <div className="hidden md:block">
-                <SignInButton />
                 {isLandingPage && (
-                  <GetStartedButton
-                    onClick={() => {
-                      const input = document.getElementById("room-code-input");
-                      if (input) {
-                        input.focus();
-                        input.scrollIntoView({
-                          behavior: "smooth",
-                          block: "center",
-                        });
-                      }
-                    }}
-                  />
+                  <>
+                    <SignInButton />
+                    <GetStartedButton
+                      onClick={() => {
+                        const input =
+                          document.getElementById("room-code-input");
+                        if (input) {
+                          input.focus();
+                          input.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                          });
+                        }
+                      }}
+                    />
+                  </>
                 )}
               </div>
             )}
