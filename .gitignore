@@ -61,3 +61,7 @@ junit.xml
 
 # Local config
 *.local
+
+# Agents
+.claude
+.commandcode
