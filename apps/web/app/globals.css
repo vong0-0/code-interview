@@ -102,6 +102,8 @@
   --muted-foreground: #71717a;
   --primary: #2563eb;
   --primary-foreground: #ffffff;
+  --accent: #f0f0f3;
+  --accent-foreground: #09090b;
   --destructive: #dc2626;
   --success: #16a34a;
   --warning: #d97706;
@@ -131,6 +133,8 @@
   --muted-foreground: #acacb0;
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
+  --accent: #27272a;
+  --accent-foreground: #fafafa;
   --destructive: #ef4444;
   --success: #22c55e;
   --warning: #f59e0b;

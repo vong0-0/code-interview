@@ -1,3 +1,5 @@
+"use client";
+
 import { SectionLabel } from "@/components/common/section-label";
 import {
   Card,
@@ -8,8 +10,16 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { GoogleSignInButton } from "@/components/common/buttons";
+import { signIn } from "@/lib/auth-client";
 
 export default function SignInCard() {
+  const handleGoogleSignIn = () => {
+    signIn.social({
+      provider: "google",
+      callbackURL: `${process.env.NEXT_PUBLIC_WEB_URL}/dashboard`,
+    });
+  };
+
   return (
     <Card className="w-full max-w-[400px] mx-auto py-8 rounded-md">
       <CardHeader>
@@ -28,7 +38,7 @@ export default function SignInCard() {
         <Separator className="mt-2" />
 
         <div className="my-6">
-          <GoogleSignInButton />
+          <GoogleSignInButton onClick={handleGoogleSignIn} />
         </div>
 
         <div className="flex items-center gap-3 mb-2">
@@ -38,7 +48,7 @@ export default function SignInCard() {
         </div>
 
         <p className="text-xs text-muted-foreground text-center px-4 mt-6">
-          Don't have an account? Signing in will create one automatically.
+          Don&apos;t have an account? Signing in will create one automatically.
         </p>
       </CardContent>
     </Card>
