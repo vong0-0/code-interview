@@ -11,12 +11,7 @@ import {
 import { JoinRoomButton } from "@/components/common/buttons";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import {
-  Alert,
-  AlertAction,
-  AlertDescription,
-  AlertTitle,
-} from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
 
 export default function JoinRoomCard() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { GetStartedButton, JoinRoomButton } from "@/components/common/buttons";
+import { JoinRoomButton } from "@/components/common/buttons";
 import { SectionLabel } from "@/components/common/section-label";
 import { Input } from "@/components/ui/input";
 import { jetbrainsMono } from "@/lib/fonts";
