@@ -79,7 +79,11 @@ function DropdownContent({
   onLogOut?: () => void;
 }) {
   return (
-    <DropdownMenuContent className="w-56" align="end" sideOffset={8}>
+    <DropdownMenuContent
+      className="w-56 bg-white dark:bg-black"
+      align="end"
+      sideOffset={8}
+    >
       <DropdownMenuLabel className="flex items-center gap-3 p-3">
         <UserAvatar user={user} size="md" />
         <div className="flex min-w-0 flex-col">

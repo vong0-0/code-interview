@@ -32,6 +32,7 @@ export default function RootLayout({
   const isLandingPage = pathname === "/";
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  console.log(session);
 
   // ─── Scroll Lock ──────────────────────────────────────────────────────────
   useEffect(() => {

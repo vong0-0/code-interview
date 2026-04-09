@@ -12,21 +12,12 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AvatarDropdown } from "./avatar-dropdown";
-import { BookOpen, LayoutDashboard } from "lucide-react";
-import { AuthActionsSkeleton } from "./skeletons/nav-skeletons";
-import { usePathname } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
-
-const SIDEBAR_MENU_ITEMS = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Question Bank", href: "/question-bank", icon: BookOpen },
-];
 
 export function AppSidebar({
   children,
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname();
   const { data: session, isPending } = useSession();
   const router = useRouter();
   function handleSignOut() {

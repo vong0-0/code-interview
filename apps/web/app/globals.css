@@ -121,7 +121,7 @@
 
 /* ── Dark Mode ── */
 [data-theme="dark"] {
-  --background: #0f0f11;
+  --background: #171719;
   --foreground: #fafafa;
   --card: #1c1c1f;
   --card-foreground: #fafafa;
