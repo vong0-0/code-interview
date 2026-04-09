@@ -29,7 +29,7 @@ import { cn } from "@/lib/utils";
 // ─── Header Variants ─────────────────────────────────────────────────────────
 
 const headerVariants = cva(
-  "sticky top-0 z-50 flex w-full items-center border-b bg-background/80 backdrop-blur-lg transition-colors",
+  "flex w-full items-center border-b bg-background/80 backdrop-blur-lg transition-colors",
   {
     variants: {
       size: {
@@ -38,10 +38,12 @@ const headerVariants = cva(
         lg: "h-16 px-6 md:px-8",
       },
       variant: {
-        default: "border-border",
-        transparent: "border-transparent bg-transparent backdrop-blur-none",
+        default: "sticky top-0 z-50 border-border",
+        transparent:
+          "sticky top-0 z-50 border-transparent bg-transparent backdrop-blur-none",
         floating:
-          "mx-auto mt-3 max-w-7xl rounded-xl border border-border/50 bg-background/70 shadow-sm",
+          "sticky top-0 z-50 mx-auto mt-3 max-w-7xl rounded-xl border border-border/50 bg-background/70 shadow-sm",
+        static: "border-border",
       },
     },
     defaultVariants: {
