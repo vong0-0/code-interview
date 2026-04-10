@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
+import { X } from "lucide-react";
 
 export function GetStartedButton({
   className,
@@ -67,6 +68,40 @@ export function GoogleSignInButton({
     >
       <FcGoogle className="size-5" />
       <p>Continue with Google</p>
+    </Button>
+  );
+}
+
+export function CreateRoomButton({
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      {...props}
+      className={cn(
+        "w-full rounded-[4px] border border-solid border-transparent font-medium text-white px-4 py-2.5 text-sm bg-primary dark:text-black hover:translate-y-[-4px] hover:bg-transparent hover:border-primary hover:text-black hover:shadow-[0px_4px_0px_0px_var(--primary)] dark:hover:text-white transition-all duration-300",
+        className,
+      )}
+    >
+      Create Room
+    </button>
+  );
+}
+
+export function ResetFilterButton({
+  className,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className={cn("h-8 px-2 text-muted-foreground", className)}
+      {...props}
+    >
+      Reset
+      <X className="ml-1.5 h-4 w-4" />
     </Button>
   );
 }
