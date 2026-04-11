@@ -2,15 +2,21 @@ import type { Request, Response } from "express"
 import { prisma as db } from "../lib/prisma.js"
 import { generateUniqueRoomCode } from "../utils/room-code.js"
 import { validateRequiredFields } from "../utils/validate-fields.js"
+import { buildDateFilter } from "../utils/date-filter.js"
 
 export async function getRooms(req: Request, res: Response) {
   try {
     const userId = req.user.id
-    const { search, status } = req.query
+    const { search, status, date, dateFrom, dateTo } = req.query
 
     const rooms = await db.room.findMany({
       where: {
         interviewerId: userId,
+        ...buildDateFilter({
+          date: date as string,
+          dateFrom: dateFrom as string,
+          dateTo: dateTo as string,
+        }),
         ...(status && { status: status as "OPEN" | "CLOSED" }),
         ...(search && {
           title: { contains: search as string, mode: "insensitive" },
