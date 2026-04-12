@@ -314,8 +314,8 @@ export function DatePicker(props: DatePickerProps) {
             className,
           )}
         >
-          <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
-          <span className="flex-1 text-left truncate">
+          <CalendarIcon className="mr-2 h-4 w-4 shrink-0 text-black dark:text-white" />
+          <span className="flex-1 text-left truncate text-black dark:text-white text-sm font-medium">
             {label ?? placeholder}
           </span>
           {clearable && hasValue && (

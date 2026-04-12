@@ -69,7 +69,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </AppSidebar>
       <SidebarInset className="overflow-hidden">
         <SiteHeader
-          variant={"static"}
+          variant={"default"}
           className="shadow-none backdrop-blur-none md:px-4 lg:px-6 py-2"
         >
           <SiteHeader.Start>
@@ -97,7 +97,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </SiteHeader.End>
         </SiteHeader>
-        <div className="px-2 py-2 md:px-4 md:py-4 lg:px-6 lg:py-6">
+        <div className="@container/main px-4 py-4 lg:px-6 lg:py-8">
           {children}
         </div>
       </SidebarInset>

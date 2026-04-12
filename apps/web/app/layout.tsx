@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { geist, jetbrainsMono } from "@/lib/fonts";
 import "./globals.css";
+import { QueryProvider } from "@/components/common/query-provider";
 
 export const metadata: Metadata = {
   title: {
@@ -30,7 +31,7 @@ export default function RootLayout({
             `,
           }}
         />
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

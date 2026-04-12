@@ -129,7 +129,7 @@
   --border-subtle: #3f3f46;
   --input: #111113;
   --ring: #3b82f6;
-  --muted: #2c2c31;
+  --muted: #434349;
   --muted-foreground: #acacb0;
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
@@ -172,5 +172,14 @@
 
   .section-container {
     @apply w-full max-w-9xl px-4 md:px-6 py-14 md:py-20 border-b border-border;
+  }
+}
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
