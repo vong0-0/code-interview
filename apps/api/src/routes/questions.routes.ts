@@ -5,7 +5,7 @@ import {
   createQuestion,
   updateQuestion,
   deleteQuestion,
-} from "../controllers/questons.controller.js"
+} from "../controllers/questions.controller.js"
 import { requireAuth } from "../middleware/requireAuth.js"
 
 const router: Router = express.Router()

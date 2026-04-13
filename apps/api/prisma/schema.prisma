@@ -135,8 +135,6 @@ model Question {
   difficulty  Difficulty
   language    String?
   starterCode String?
-  solution    String?
-  isPublic    Boolean    @default(true)
   authorId    String                    
   createdAt   DateTime   @default(now())
   rooms       Room[]

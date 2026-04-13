@@ -4,25 +4,11 @@ import { prisma as db } from "../lib/prisma.js"
 export async function getQuestions(req: Request, res: Response) {
   try {
     const userId = req.user.id
-    const { difficulty, visibility = "all", search } = req.query
-
-    if (!["public", "private", "all"].includes(visibility as string)) {
-      res
-        .status(400)
-        .json({ error: "visibility must be public, private or all" })
-      return
-    }
-
-    const visibilityFilter =
-      visibility === "public"
-        ? { isPublic: true }
-        : visibility === "private"
-          ? { isPublic: false, authorId: userId }
-          : { OR: [{ isPublic: true }, { isPublic: false, authorId: userId }] }
+    const { difficulty, search } = req.query
 
     const questions = await db.question.findMany({
       where: {
-        ...visibilityFilter,
+        authorId: userId,
         ...(difficulty && {
           difficulty: difficulty as "EASY" | "MEDIUM" | "HARD",
         }),
@@ -36,7 +22,6 @@ export async function getQuestions(req: Request, res: Response) {
         title: true,
         difficulty: true,
         language: true,
-        isPublic: true,
         authorId: true,
         createdAt: true,
       },
@@ -63,8 +48,6 @@ export async function getQuestion(req: Request, res: Response) {
         difficulty: true,
         language: true,
         starterCode: true,
-        solution: true,
-        isPublic: true,
         authorId: true,
         createdAt: true,
       },
@@ -75,8 +58,7 @@ export async function getQuestion(req: Request, res: Response) {
       return
     }
 
-    // private question เห็นได้แค่เจ้าของ
-    if (!question.isPublic && question.authorId !== userId) {
+    if (question.authorId !== userId) {
       res.status(403).json({ error: "Forbidden" })
       return
     }
@@ -97,8 +79,6 @@ export async function createQuestion(req: Request, res: Response) {
       difficulty,
       language,
       starterCode,
-      solution,
-      isPublic = true,
     } = req.body
 
     if (!title || !description || !difficulty) {
@@ -120,8 +100,6 @@ export async function createQuestion(req: Request, res: Response) {
         difficulty,
         language,
         starterCode,
-        solution,
-        isPublic,
         authorId: userId,
       },
     })
@@ -143,8 +121,6 @@ export async function updateQuestion(req: Request, res: Response) {
       difficulty,
       language,
       starterCode,
-      solution,
-      isPublic,
     } = req.body
 
     const question = await db.question.findUnique({ where: { id } })
@@ -172,8 +148,6 @@ export async function updateQuestion(req: Request, res: Response) {
         ...(difficulty && { difficulty }),
         ...(language !== undefined && { language }),
         ...(starterCode !== undefined && { starterCode }),
-        ...(solution !== undefined && { solution }),
-        ...(isPublic !== undefined && { isPublic }),
       },
     })
 

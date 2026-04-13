@@ -6,7 +6,7 @@ import { corsOptions } from "./config/cors.js"
 import authRoutes from "./routes/auth.routes.js"
 import meRoutes from "./routes/me.routes.js"
 import roomRoutes from "./routes/rooms.routes.js"
-import questionRoutes from "./routes/questons.routes.js"
+import questionRoutes from "./routes/questions.routes.js"
 
 const app: Express = express()
 
