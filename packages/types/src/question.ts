@@ -7,8 +7,6 @@ export interface Question {
   difficulty: Difficulty;
   language: string | null;
   starterCode: string | null;
-  solution: string | null;
-  isPublic: boolean;
   authorId: string;
   createdAt: string;
 }
@@ -17,9 +15,9 @@ export type QuestionSummary = Pick<
   Question,
   | "id"
   | "title"
+  | "description"
   | "difficulty"
   | "language"
-  | "isPublic"
   | "authorId"
   | "createdAt"
 >;
