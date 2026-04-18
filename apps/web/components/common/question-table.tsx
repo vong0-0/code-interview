@@ -90,7 +90,7 @@ export default function QuestionTable({
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-1">
-                <Link href={`/questions/${question.id}/edit`}>
+                <Link href={`/question-bank/${question.id}/edit`}>
                   <Button variant="ghost" size="icon" className="size-8">
                     <Pencil className="size-4" />
                   </Button>

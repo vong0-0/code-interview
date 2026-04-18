@@ -40,6 +40,26 @@ export function useQuestionOverview() {
   return { overview, isLoading };
 }
 
+export function useQuestion(id: string) {
+  return useQuery({
+    queryKey: questionKeys.detail(id),
+    queryFn: () => questionService.getOne(id),
+    enabled: !!id,
+  });
+}
+
+export function useUpdateQuestion() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: QuestionFormPayload }) =>
+      questionService.update(id, payload),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: questionKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: questionKeys.detail(id) });
+    },
+  });
+}
+
 export function useDeleteQuestion() {
   const queryClient = useQueryClient();
   return useMutation({

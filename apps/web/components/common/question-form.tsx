@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ interface QuestionFormProps {
   className?: string;
   submitLabel?: string;
   formId?: string;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
 const difficultyOptions: SegmentedOption<Difficulty>[] = [
@@ -50,6 +52,7 @@ export function QuestionForm({
   onSubmit,
   className,
   formId,
+  onDirtyChange,
 }: QuestionFormProps) {
   const form = useForm<QuestionFormValues>({
     resolver: zodResolver(questionFormSchema),
@@ -63,6 +66,14 @@ export function QuestionForm({
   });
 
   const language = useWatch({ control: form.control, name: "language" });
+
+  const { isDirty } = form.formState;
+
+  React.useEffect(() => {
+    if (onDirtyChange) {
+      onDirtyChange(isDirty);
+    }
+  }, [isDirty, onDirtyChange]);
 
   return (
     <form

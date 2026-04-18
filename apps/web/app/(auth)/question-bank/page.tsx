@@ -2,6 +2,7 @@
 import { Difficulty } from "@code-interview/types";
 
 import { useFilterStore, useFilterUrlSync } from "@/app/hooks/use-filter-store";
+import { useDebounce } from "use-debounce";
 import {
   CreateRoomButton,
   ResetFilterButton,
@@ -20,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { useQuestions, useQuestionOverview } from "@/lib/hooks/use-questions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StateOverviewSkeleton } from "@/components/common/skeletons/state-overview-skeletons";
+import { DEBOUNCE_DELAY } from "@/app/constants/debounce";
 
 export default function QuestionBankPage() {
   return (
@@ -34,13 +36,15 @@ export default function QuestionBankPage() {
 
 function QuestionList() {
   const { search, getFilter } = useFilterStore();
+  const [debouncedSearch] = useDebounce(search, DEBOUNCE_DELAY.search);
+
   const difficultyFilter = getFilter("difficulty", []);
   const difficulty = (
     difficultyFilter.length > 0 ? difficultyFilter[0] : undefined
   ) as Difficulty | undefined;
 
   const { data: questions, isLoading } = useQuestions({
-    search,
+    search: debouncedSearch,
     difficulty,
   });
 

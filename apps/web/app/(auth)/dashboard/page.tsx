@@ -1,6 +1,7 @@
 "use client";
 
 import { useFilterStore, useFilterUrlSync } from "@/app/hooks/use-filter-store";
+import { useDebounce } from "use-debounce";
 import {
   CreateRoomButton,
   ResetFilterButton,
@@ -28,6 +29,7 @@ import { RoomFilters } from "@/lib/types/room.types";
 import { InterviewRoomFormDialog } from "@/components/common/interview-room-form-dialog";
 import { RoomFormValues } from "@/lib/schemas/room.schema";
 import { DoorOpen } from "lucide-react";
+import { DEBOUNCE_DELAY } from "@/app/constants/debounce";
 
 export default function Page() {
   return (
@@ -42,8 +44,10 @@ export default function Page() {
 
 function InterviewRoomList() {
   const { search, getFilter, hasFilters } = useFilterStore();
+  const [debouncedSearch] = useDebounce(search, DEBOUNCE_DELAY.search);
+
   const filters: RoomFilters = {
-    search: search || undefined,
+    search: debouncedSearch || undefined,
     status: getFilter("status", [])[0] as "OPEN" | "CLOSED",
     date: getFilter("date", [])[0],
     dateFrom: getFilter("dateFrom", [])[0],

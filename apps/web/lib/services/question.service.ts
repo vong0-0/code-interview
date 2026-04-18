@@ -26,6 +26,16 @@ export const questionService = {
     return data.question;
   },
 
+  getOne: async (id: string): Promise<Question> => {
+    const { data } = await api.get(`/questions/${id}`);
+    return data.question;
+  },
+
+  update: async (id: string, payload: QuestionFormPayload): Promise<Question> => {
+    const { data } = await api.put(`/questions/${id}`, payload);
+    return data.question;
+  },
+
   delete: async (id: string): Promise<void> => {
     await api.delete(`/questions/${id}`);
   },

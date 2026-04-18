@@ -15,7 +15,9 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ConfirmDialogProps {
-  trigger: React.ReactNode; // The element that triggers the dialog (e.g., a Button)
+  trigger?: React.ReactNode; // The element that triggers the dialog (e.g., a Button)
+  open?: boolean; // Controlled open state
+  onOpenChange?: (open: boolean) => void; // Controlled state handler
   title: string; // The dialog title
   description?: string; // Optional additional information or context
   confirmLabel?: string; // Label for the confirmation button (defaults to "Confirm")
@@ -27,6 +29,8 @@ interface ConfirmDialogProps {
 
 export function ConfirmDialog({
   trigger,
+  open,
+  onOpenChange,
   title,
   description,
   confirmLabel = "Confirm",
@@ -36,8 +40,8 @@ export function ConfirmDialog({
   isLoading = false,
 }: ConfirmDialogProps) {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
       <AlertDialogContent className="bg-background">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-lg font-medium">

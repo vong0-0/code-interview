@@ -29,9 +29,10 @@ const SIDEBAR_MENU_ITEMS = [
   { label: "Question Bank", href: "/question-bank", icon: BookOpen },
 ];
 
-const EXTRA_TITLES: Record<string, string> = {
-  "/question-bank/create": "Create Question",
-};
+const EXTRA_TITLES = [
+  { pattern: /^\/question-bank\/create$/, title: "Create Question" },
+  { pattern: /^\/question-bank\/[^/]+\/edit$/, title: "Update Question" },
+];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -44,7 +45,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       (item.href !== "/dashboard" && pathname.startsWith(item.href)),
   );
 
-  const pageTitle = EXTRA_TITLES[pathname] || activeItem?.label || "Overview";
+  const extraMatch = EXTRA_TITLES.find((t) => t.pattern.test(pathname));
+  const pageTitle = extraMatch?.title || activeItem?.label || "Overview";
 
   function handleSignOut() {
     signOut({
