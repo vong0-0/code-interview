@@ -16,6 +16,9 @@ import { QuestionTableSkeleton } from "../skeletons/question-table-skeleton";
 import { EmptyState } from "./empty-state";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { ConfirmDialog } from "./confirm-dialog";
+import { useDeleteQuestion } from "@/lib/hooks/use-questions";
+import { Loader2 } from "lucide-react";
 
 interface QuestionTableProps extends React.ComponentProps<typeof Table> {
   questions?: QuestionSummary[];
@@ -92,13 +95,7 @@ export default function QuestionTable({
                     <Pencil className="size-4" />
                   </Button>
                 </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
+                <DeleteQuestionButton question={question} />
               </div>
             </TableCell>
           </TableRow>
@@ -126,6 +123,38 @@ function QuestionTableEmpty({ className }: { className?: string }) {
         "rounded-md border border-dashed bg-muted/10 p-12 py-24 animate-in fade-in zoom-in duration-300",
         className,
       )}
+    />
+  );
+}
+
+function DeleteQuestionButton({ question }: { question: QuestionSummary }) {
+  const deleteMutation = useDeleteQuestion();
+  const isDeleting = deleteMutation.isPending;
+
+  return (
+    <ConfirmDialog
+      title="Delete Question"
+      description={`Are you sure you want to delete "${question.title}"?`}
+      confirmLabel="Delete"
+      cancelLabel="Cancel"
+      variant="destructive"
+      onConfirm={async () => {
+        await deleteMutation.mutateAsync(question.id);
+      }}
+      trigger={
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={isDeleting}
+          className="size-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+        >
+          {isDeleting ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Trash2 className="size-4" />
+          )}
+        </Button>
+      }
     />
   );
 }

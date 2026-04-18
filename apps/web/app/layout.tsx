@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { geist, jetbrainsMono } from "@/lib/fonts";
 import "./globals.css";
 import { QueryProvider } from "@/components/common/query-provider";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: {
@@ -19,8 +20,10 @@ export default function RootLayout({
       className={`${geist.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
-        <script
+      <head>
+        <Script
+          id="theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
@@ -31,6 +34,8 @@ export default function RootLayout({
             `,
           }}
         />
+      </head>
+      <body className="min-h-full flex flex-col">
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

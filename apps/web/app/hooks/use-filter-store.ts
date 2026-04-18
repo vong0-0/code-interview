@@ -1,25 +1,25 @@
 import { create } from "zustand";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 interface FilterState {
-  filters: Record<string, any[]>;
+  filters: Record<string, string[]>;
   search: string;
   sortBy: string;
   sortOrder: "asc" | "desc";
   page: number;
   limit: number;
   hasFilters: boolean;
-  setFilter: (key: string, value: any[]) => void;
+  setFilter: (key: string, value: string[]) => void;
   setSearch: (value: string) => void;
   setSorting: (sortBy: string, sortOrder: "asc" | "desc") => void;
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
-  getFilter: <T>(key: string, defaultValue: T[]) => T[];
+  getFilter: (key: string, defaultValue: string[]) => string[];
   resetFilters: () => void;
-  computeFacets: <T extends Record<string, any>>(
+  computeFacets: <T extends Record<string, unknown>>(
     data: T[],
-    configs: Record<string, any[]>,
+    configs: Record<string, string[]>,
   ) => Record<string, Record<string, number>>;
 }
 
@@ -68,8 +68,7 @@ export const useFilterStore = create<FilterState>((set, get) => ({
     Object.entries(configs).forEach(([key, options]) => {
       results[key] = Object.fromEntries(
         options.map((option) => {
-          const value = typeof option === "object" ? option.value : option;
-          return [value, data.filter((item) => item[key] === value).length];
+          return [option, data.filter((item) => (item as Record<string, unknown>)[key] === option).length];
         }),
       );
     });
@@ -85,6 +84,7 @@ export function useFilterUrlSync() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const hydrated = useRef(false);
   const {
     filters,
     search,
@@ -101,6 +101,9 @@ export function useFilterUrlSync() {
 
   // Hydrate from URL on mount
   useEffect(() => {
+    if (hydrated.current) return;
+    hydrated.current = true;
+
     const params = new URLSearchParams(searchParams.toString());
 
     // Search
@@ -132,10 +135,7 @@ export function useFilterUrlSync() {
         setFilter(key, values);
       }
     });
-
-    // Handle missing filters that were in store but not in URL (on initial load)
-    // Actually, we usually want URL to be the source of truth on load.
-  }, []); // Only run once on mount
+  }, [filters, search, searchParams, setFilter, setSearch, setSorting, setPage, setLimit]);
 
   // Sync to URL whenever store changes
   useEffect(() => {

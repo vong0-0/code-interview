@@ -15,8 +15,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/common/date-picker";
-import { useDebounce } from "use-debounce";
-import { DEBOUNCE_DELAY } from "@/app/constants/debounce";
 import InterviewRoomCard from "@/components/common/interview-room-card";
 import { EmptyState } from "@/components/common/empty-state";
 import { StateOverviewSkeleton } from "@/components/common/skeletons/state-overview-skeletons";
@@ -31,12 +29,6 @@ import { InterviewRoomFormDialog } from "@/components/common/interview-room-form
 import { RoomFormValues } from "@/lib/schemas/room.schema";
 import { DoorOpen } from "lucide-react";
 
-const MOCK_STATE_OVERVIEW = {
-  totalRooms: 124,
-  openRoom: 60,
-  closedRoom: 64,
-};
-
 export default function Page() {
   return (
     <>
@@ -49,13 +41,13 @@ export default function Page() {
 }
 
 function InterviewRoomList() {
-  const { search, getFilter, hasFilters, resetFilters } = useFilterStore();
+  const { search, getFilter, hasFilters } = useFilterStore();
   const filters: RoomFilters = {
     search: search || undefined,
-    status: getFilter<"OPEN" | "CLOSED">("status", [])[0],
-    date: getFilter<string>("date", [])[0],
-    dateFrom: getFilter<string>("dateFrom", [])[0],
-    dateTo: getFilter<string>("dateTo", [])[0],
+    status: getFilter("status", [])[0] as "OPEN" | "CLOSED",
+    date: getFilter("date", [])[0],
+    dateFrom: getFilter("dateFrom", [])[0],
+    dateTo: getFilter("dateTo", [])[0],
   };
   const { data: rooms, isLoading, error } = useRooms(filters);
 
@@ -85,7 +77,6 @@ function InterviewRoomList() {
 
 function FilterBar() {
   const { search, setSearch, resetFilters } = useFilterStore();
-  const [debouncedSearch] = useDebounce(search, DEBOUNCE_DELAY.search);
 
   useFilterUrlSync();
 

@@ -1,6 +1,6 @@
 "use client";
+import { Difficulty } from "@code-interview/types";
 
-import { DEBOUNCE_DELAY } from "@/app/constants/debounce";
 import { useFilterStore, useFilterUrlSync } from "@/app/hooks/use-filter-store";
 import {
   CreateRoomButton,
@@ -16,9 +16,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useDebounce } from "use-debounce";
-import { MOCK_QUESTIONS } from "./mock-data";
 import { useRouter } from "next/navigation";
+import { useQuestions, useQuestionOverview } from "@/lib/hooks/use-questions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { StateOverviewSkeleton } from "@/components/common/skeletons/state-overview-skeletons";
+import { QuestionTableSkeleton } from "@/components/skeletons/question-table-skeleton";
 
 export default function QuestionBankPage() {
   return (
@@ -32,16 +34,26 @@ export default function QuestionBankPage() {
 }
 
 function QuestionList() {
+  const { search, getFilter } = useFilterStore();
+  const difficultyFilter = getFilter("difficulty", []);
+  const difficulty = (
+    difficultyFilter.length > 0 ? difficultyFilter[0] : undefined
+  ) as Difficulty | undefined;
+
+  const { data: questions, isLoading } = useQuestions({
+    search,
+    difficulty,
+  });
+
   return (
     <section id="question-list" className="my-6">
-      <QuestionTable questions={MOCK_QUESTIONS} />
+      <QuestionTable questions={questions || []} isLoading={isLoading} />
     </section>
   );
 }
 
 function FilterBar() {
   const { search, setSearch, resetFilters } = useFilterStore();
-  const [debouncedSearch] = useDebounce(search, DEBOUNCE_DELAY.search);
 
   useFilterUrlSync();
 
@@ -74,70 +86,96 @@ function FilterBar() {
 }
 
 function StateOverview() {
+  const { overview, isLoading } = useQuestionOverview();
+
+  if (isLoading) return <StateOverviewSkeleton count={4} />;
+
   return (
     <section id="state-overview">
       <ul className="my-12 grid grid-cols-1 @[400px]/main:grid-cols-2 @[600px]/main:grid-cols-4 gap-4 **:data-[slot=card-title]:text-muted-foreground **:data-[slot=card-title]:text-sm **:data-[slot=card-title]:font-mono">
         <li>
-          <Card id="total-rooms-card" className="rounded-xs px-3 py-6 gap-1">
+          <Card
+            id="total-questions-card"
+            className="rounded-xs px-3 py-6 gap-1 border-t-2 border-t-primary/20"
+          >
             <CardHeader>
-              <CardTitle>Total Rooms</CardTitle>
+              <CardTitle>Total Questions</CardTitle>
               <CardDescription className="sr-only">
-                My total open and closed interview rooms
+                Total questions in bank
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{66}</p>
+              {isLoading ? (
+                <Skeleton className="h-9 w-16" />
+              ) : (
+                <p className="text-3xl font-bold">{overview.totalQuestions}</p>
+              )}
             </CardContent>
           </Card>
         </li>
         <li>
-          <Card id="total-rooms-card" className="rounded-xs px-3 py-6 gap-1">
+          <Card
+            id="easy-questions-card"
+            className="rounded-xs px-3 py-6 gap-1 border-t-2 border-t-blue-500/50 hover:border-t-blue-500 transition-colors"
+          >
             <CardHeader>
               <div className="flex items-center gap-2">
-                <CardTitle>Open Rooms</CardTitle>
-                {/* Open room indicator */}
-                <div className="w-1.5 h-1.5 rounded-full bg-success"></div>
+                <CardTitle>Easy</CardTitle>
               </div>
               <CardDescription className="sr-only">
-                My open interview rooms
+                Easy difficulty questions
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{22}</p>
+              {isLoading ? (
+                <Skeleton className="h-9 w-16" />
+              ) : (
+                <p className="text-3xl font-bold">{overview.easyQuestions}</p>
+              )}
             </CardContent>
           </Card>
         </li>
         <li>
-          <Card id="total-rooms-card" className="rounded-xs px-3 py-6 gap-1">
+          <Card
+            id="medium-questions-card"
+            className="rounded-xs px-3 py-6 gap-1 border-t-2 border-t-orange-500/50 hover:border-t-orange-500 transition-colors"
+          >
             <CardHeader>
               <div className="flex items-center gap-2">
-                <CardTitle>Closed Rooms</CardTitle>
-                {/* Closed room indicator */}
-                <div className="w-1.5 h-1.5 rounded-full bg-yellow-600"></div>
+                <CardTitle>Medium</CardTitle>
               </div>
               <CardDescription className="sr-only">
-                My closed interview rooms
+                Medium difficulty questions
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{22}</p>
+              {isLoading ? (
+                <Skeleton className="h-9 w-16" />
+              ) : (
+                <p className="text-3xl font-bold">{overview.mediumQuestions}</p>
+              )}
             </CardContent>
           </Card>
         </li>
         <li>
-          <Card id="total-rooms-card" className="rounded-xs px-3 py-6 gap-1">
+          <Card
+            id="hard-questions-card"
+            className="rounded-xs px-3 py-6 gap-1 border-t-2 border-t-red-500/50 hover:border-t-red-500 transition-colors"
+          >
             <CardHeader>
               <div className="flex items-center gap-2">
-                <CardTitle>Closed Rooms</CardTitle>
-                {/* Closed room indicator */}
-                <div className="w-1.5 h-1.5 rounded-full bg-destructive"></div>
+                <CardTitle>Hard</CardTitle>
               </div>
               <CardDescription className="sr-only">
-                My closed interview rooms
+                Hard difficulty questions
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">{22}</p>
+              {isLoading ? (
+                <Skeleton className="h-9 w-16" />
+              ) : (
+                <p className="text-3xl font-bold">{overview.hardQuestions}</p>
+              )}
             </CardContent>
           </Card>
         </li>

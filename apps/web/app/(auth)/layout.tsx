@@ -29,10 +29,22 @@ const SIDEBAR_MENU_ITEMS = [
   { label: "Question Bank", href: "/question-bank", icon: BookOpen },
 ];
 
+const EXTRA_TITLES: Record<string, string> = {
+  "/question-bank/create": "Create Question",
+};
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session, isPending } = useSession();
+
+  const activeItem = SIDEBAR_MENU_ITEMS.find(
+    (item) =>
+      pathname === item.href ||
+      (item.href !== "/dashboard" && pathname.startsWith(item.href)),
+  );
+
+  const pageTitle = EXTRA_TITLES[pathname] || activeItem?.label || "Overview";
 
   function handleSignOut() {
     signOut({
@@ -43,6 +55,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       },
     });
   }
+
   return (
     <SidebarProvider>
       <AppSidebar variant="inset">
@@ -53,7 +66,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <SidebarMenuItem key={item.label}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.href}
+                    isActive={
+                      pathname === item.href ||
+                      (item.href !== "/dashboard" &&
+                        pathname.startsWith(item.href))
+                    }
                     className={cn("w-full px-4 py-2", jetbrainsMono.className)}
                   >
                     <Link href={item.href}>
@@ -75,10 +92,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <SiteHeader.Start>
             <SidebarTrigger />
             <Separator orientation="vertical" />
-            <p className="text-lg font-semibold">
-              {SIDEBAR_MENU_ITEMS.find((item) => item.href === pathname)
-                ?.label ?? "Overview"}
-            </p>
+            <p className="text-lg font-semibold">{pageTitle}</p>
           </SiteHeader.Start>
           <SiteHeader.End className="gap-2 md:gap-4">
             <ThemeToggle />

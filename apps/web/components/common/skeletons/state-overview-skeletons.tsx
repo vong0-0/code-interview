@@ -22,7 +22,7 @@ export function StateOverviewCardSkeleton() {
 
 export function StateOverviewSkeleton({ count = 3 }: { count?: number }) {
   return (
-    <ul className="my-12 grid grid-cols-1 @[400px]/main:grid-cols-2 @[600px]/main:grid-cols-3 gap-4">
+    <ul className="my-12 grid grid-cols-1 @[400px]/main:grid-cols-2 @[600px]/main:grid-cols-3 @[800px]/main:grid-cols-4 gap-4">
       {Array.from({ length: count }).map((_, i) => (
         <li key={i}>
           <StateOverviewCardSkeleton />

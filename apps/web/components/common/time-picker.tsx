@@ -49,7 +49,7 @@ const parseValue = (value: string | number | undefined, use12Hour: boolean, mode
   // String format assumes "HH:mm:ss AM" or "HH:mm"
   const [time, ampmPart] = value.split(" ");
   const parts = time.split(":").map(Number);
-  let h = parts[0] || 0;
+  const h = parts[0] || 0;
   const m = parts[1] || 0;
   const s = parts[2] || 0;
   const ampm = ampmPart || (h >= 12 ? "PM" : "AM");
@@ -215,7 +215,7 @@ export function TimePicker({
       onChange?.(ms);
     } else {
       const padNum = (n: number) => n.toString().padStart(2, "0");
-      let hStr = mode === "duration" ? finalParts.hours.toString().padStart(2, "0") : padNum(finalParts.hours);
+      const hStr = mode === "duration" ? finalParts.hours.toString().padStart(2, "0") : padNum(finalParts.hours);
       
       let res = `${hStr}:${padNum(finalParts.minutes)}`;
       if (resolvedFormat === "HH:mm:ss") res += `:${padNum(finalParts.seconds)}`;

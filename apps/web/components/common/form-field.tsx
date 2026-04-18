@@ -1,10 +1,4 @@
-import {
-  Controller,
-  FieldValues,
-  Path,
-  Control,
-  FieldError as RHFFieldError,
-} from "react-hook-form";
+import { Controller, ControllerRenderProps, FieldValues, Path, Control } from "react-hook-form";
 import {
   Field,
   FieldLabel,
@@ -12,7 +6,7 @@ import {
   FieldContent,
 } from "@/components/ui/field";
 
-type Orientation = "vertical" | "responsive";
+export type Orientation = "vertical" | "horizontal" | "responsive";
 
 interface FormFieldProps<T extends FieldValues> {
   name: Path<T>;
@@ -20,7 +14,8 @@ interface FormFieldProps<T extends FieldValues> {
   label: string;
   id: string; // เพิ่ม
   orientation?: Orientation;
-  children: (field: any, id: string) => React.ReactNode; // ส่ง id ออกไปด้วย
+  hideLabel?: boolean;
+  children: (field: ControllerRenderProps<T, Path<T>>, id: string) => React.ReactNode;
 }
 
 export function FormField<T extends FieldValues>({
@@ -29,6 +24,7 @@ export function FormField<T extends FieldValues>({
   label,
   id,
   orientation,
+  hideLabel,
   children,
 }: FormFieldProps<T>) {
   return (
@@ -37,11 +33,11 @@ export function FormField<T extends FieldValues>({
       control={control}
       render={({ field, fieldState }) => (
         <Field orientation={orientation} data-invalid={fieldState.invalid}>
-          {orientation === "responsive" ? (
-            // Responsive layout (label on the left, content on the right)
+          {orientation === "responsive" || orientation === "horizontal" ? (
+            // Responsive or Horizontal layout
             <>
               <FieldContent>
-                <FieldLabel htmlFor={id}>{label}</FieldLabel> {/* link label */}
+                {!hideLabel && <FieldLabel htmlFor={id}>{label}</FieldLabel>}
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -51,7 +47,7 @@ export function FormField<T extends FieldValues>({
           ) : (
             // Standard layout (label on top, content at the bottom)
             <>
-              <FieldLabel htmlFor={id}>{label}</FieldLabel> {/* link label */}
+              {!hideLabel && <FieldLabel htmlFor={id}>{label}</FieldLabel>}
               {children(field, id)}
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </>

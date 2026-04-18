@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Table,
   TableBody,
@@ -22,9 +21,9 @@ export function QuestionTableSkeleton({ className }: { className?: string }) {
       <TableHeader>
         <TableRow
           className={cn(
-            "bg-muted/50",
-            "**:data-[slot=table-head]:px-3 **:data-[slot=table-head]:py-2",
-            "@[800px]/main:**:data-[slot=table-head]:px-6 @[800px]/main:**:data-[slot=table-head]:py-4",
+            "bg-muted/50 **:data-[slot=table-head]:font-mono **:data-[slot=table-head]:text-[12px] **:data-[slot=table-head]:font-bold **:data-[slot=table-head]:uppercase",
+            "**:data-[slot=table-head]:px-3 **:data-[slot=table-head]:py-2", // Small padding by default
+            "@[800px]/main:**:data-[slot=table-head]:px-6 @[800px]/main:**:data-[slot=table-head]:py-4", // Larger on bigger container
           )}
         >
           <TableHead>Question & Description</TableHead>
@@ -37,16 +36,17 @@ export function QuestionTableSkeleton({ className }: { className?: string }) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Array.from({ length: 5 }).map((_, i) => (
+        {Array.from({ length: 3 }).map((_, i) => (
           <TableRow
             key={i}
             className={cn(
-              "**:data-[slot=table-cell]:px-3 **:data-[slot=table-cell]:py-3",
-              "@[800px]/main:**:data-[slot=table-cell]:px-6 @[800px]/main:**:data-[slot=table-cell]:py-4",
+              "group hover:bg-muted/30",
+              "**:data-[slot=table-cell]:px-3 **:data-[slot=table-cell]:py-3", // Small padding
+              "@[800px]/main:**:data-[slot=table-cell]:px-6 @[800px]/main:**:data-[slot=table-cell]:py-4", // Large padding
             )}
           >
             <TableCell>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3 min-w-0 overflow-hidden">
                 <Skeleton className="h-4 w-[200px]" />
                 <Skeleton className="h-3 w-[100px]" />
               </div>

@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { Check, Copy, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FieldGroup } from "@/components/ui/field";
 import { Input } from "../ui/input";
 import { TimePicker } from "./time-picker";
