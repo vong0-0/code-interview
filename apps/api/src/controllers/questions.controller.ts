@@ -20,6 +20,7 @@ export async function getQuestions(req: Request, res: Response) {
       select: {
         id: true,
         title: true,
+        description: true,
         difficulty: true,
         language: true,
         authorId: true,
