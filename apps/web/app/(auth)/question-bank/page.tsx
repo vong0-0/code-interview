@@ -20,7 +20,6 @@ import { useRouter } from "next/navigation";
 import { useQuestions, useQuestionOverview } from "@/lib/hooks/use-questions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { StateOverviewSkeleton } from "@/components/common/skeletons/state-overview-skeletons";
-import { QuestionTableSkeleton } from "@/components/skeletons/question-table-skeleton";
 
 export default function QuestionBankPage() {
   return (

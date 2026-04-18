@@ -23,7 +23,7 @@ export default function CreateQuestionPage() {
   const createQuestionMutation = useCreateQuestion();
 
   const handleSubmit = async (values: QuestionFormValues) => {
-    createQuestionMutation.mutate(values as any, {
+    createQuestionMutation.mutate(values, {
       onSuccess: () => {
         router.push("/question-bank");
       },
@@ -85,7 +85,9 @@ function PageHeader({ isSubmitting }: { isSubmitting: boolean }) {
               form="question-form"
               disabled={isSubmitting}
             >
-              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Create Question
             </Button>
           </div>

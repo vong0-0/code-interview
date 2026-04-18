@@ -48,13 +48,9 @@ const difficultyOptions: SegmentedOption<Difficulty>[] = [
 export function QuestionForm({
   initialData,
   onSubmit,
-  isSubmitting,
   className,
-  submitLabel,
   formId,
 }: QuestionFormProps) {
-  const mode = initialData ? "edit" : "create";
-
   const form = useForm<QuestionFormValues>({
     resolver: zodResolver(questionFormSchema),
     defaultValues: initialData || {
