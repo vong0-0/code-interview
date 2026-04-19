@@ -36,8 +36,22 @@ interface RoomHeaderProps {
 export function RoomHeader({ title }: RoomHeaderProps) {
   const router = useRouter();
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const displayTitle = title.length > 9 ? title.substring(0, 9) + "..." : title;
+  // Force close dropdown when screen size exceeds sm (640px)
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia("(min-width: 640px)");
+    const handleMediaChange = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (mediaQuery.matches) setIsMenuOpen(false);
+
+    mediaQuery.addEventListener("change", handleMediaChange);
+    return () => mediaQuery.removeEventListener("change", handleMediaChange);
+  }, []);
 
   const handleLeave = () => {
     router.push("/dashboard");
@@ -63,15 +77,15 @@ export function RoomHeader({ title }: RoomHeaderProps) {
       <SiteHeader variant={"transparent"} className="bg-white dark:bg-black">
         {/* Logo / Title */}
         <SiteHeader.Start>
-          <p
-            title={title}
+          <div
             className={cn(
               jetbrainsMono.className,
-              "text-sm font-medium tracking-tight",
+              "text-base sm:text-lg font-bold tracking-tight whitespace-nowrap",
             )}
           >
-            {displayTitle}
-          </p>
+            <span className="dark:text-white text-zinc-900">Code</span>
+            <span className="text-primary hidden sm:inline ml-0.5">Interview</span>
+          </div>
         </SiteHeader.Start>
 
         {/* Center Timer */}
@@ -102,7 +116,7 @@ export function RoomHeader({ title }: RoomHeaderProps) {
           />
 
           {/* Mobile Dropdown */}
-          <DropdownMenu>
+          <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <DropdownMenuTrigger asChild>
               <Button variant={"ghost"} size={"icon"} className="sm:hidden">
                 <EllipsisVertical className="size-5" />

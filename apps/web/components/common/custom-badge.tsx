@@ -15,17 +15,15 @@ const difficultyConfig: Record<
   EASY: {
     label: "Easy",
     className:
-      "border-blue-500/30 bg-blue-500/10 text-blue-500 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-400",
+      "border-green-500/20 bg-green-500/10 text-green-600 dark:text-green-500",
   },
   MEDIUM: {
     label: "Medium",
-    className:
-      "border-orange-500/30 bg-orange-500/10 text-orange-500 dark:border-orange-400/20 dark:bg-orange-400/10 dark:text-orange-400",
+    className: "border-orange-500/20 bg-orange-500/10 text-orange-500",
   },
   HARD: {
     label: "Hard",
-    className:
-      "border-red-500/30 bg-red-500/10 text-red-500 dark:border-red-400/20 dark:bg-red-400/10 dark:text-red-400",
+    className: "border-red-500/20 bg-red-500/10 text-red-500",
   },
 };
 
@@ -39,7 +37,7 @@ export function DifficultyBadge({
     <Badge
       variant="outline"
       className={cn(
-        "rounded-[4px] border px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider",
+        "rounded-sm border px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest",
         config.className,
         className,
       )}
@@ -48,3 +46,4 @@ export function DifficultyBadge({
     </Badge>
   );
 }
+

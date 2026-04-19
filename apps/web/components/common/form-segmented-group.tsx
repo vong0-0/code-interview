@@ -50,8 +50,8 @@ export function FormSegmentedGroup<T extends FieldValues, V extends string>({
                   "flex-1 font-mono text-xs font-bold uppercase tracking-wider transition-all duration-200",
                   "px-4 py-2.5 h-auto rounded-sm text-xs",
                   isActive
-                    ? cn("border-primary text-primary", option.activeClassName)
-                    : "text-muted-foreground hover:bg-muted/50",
+                    ? option.activeClassName || "border-primary text-primary"
+                    : "text-muted-foreground hover:bg-muted/50 border-transparent",
                 )}
                 onClick={() => field.onChange(option.value)}
               >

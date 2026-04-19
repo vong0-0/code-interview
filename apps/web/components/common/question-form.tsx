@@ -33,17 +33,20 @@ const difficultyOptions: SegmentedOption<Difficulty>[] = [
   {
     value: "EASY",
     label: "Easy",
-    activeClassName: "border-blue-500 text-blue-500 bg-blue-500/10",
+    activeClassName:
+      "border-green-500/50 text-green-600 bg-green-500/5 dark:text-green-400 dark:bg-green-500/10 dark:border-green-500/40",
   },
   {
     value: "MEDIUM",
     label: "Medium",
-    activeClassName: "border-orange-500 text-orange-500 bg-orange-500/10",
+    activeClassName:
+      "border-orange-500/50 text-orange-600 bg-orange-500/5 dark:text-orange-400 dark:bg-orange-500/10 dark:border-orange-500/40",
   },
   {
     value: "HARD",
     label: "Hard",
-    activeClassName: "border-red-500 text-red-500 bg-red-500/10",
+    activeClassName:
+      "border-red-500/50 text-red-600 bg-red-500/5 dark:text-red-400 dark:bg-red-500/10 dark:border-red-500/40",
   },
 ];
 
