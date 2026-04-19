@@ -73,17 +73,51 @@ function AvatarBadge({ className, ...props }: React.ComponentProps<"span">) {
   )
 }
 
-function AvatarGroup({ className, ...props }: React.ComponentProps<"div">) {
+function AvatarGroup({
+  className,
+  children,
+  max,
+  size = "default",
+  total,
+  ...props
+}: React.ComponentProps<"div"> & {
+  max?: number;
+  size?: "default" | "sm" | "lg";
+  total?: number;
+}) {
+  const childrenArray = React.Children.toArray(children);
+  const isOverflowing = max ? childrenArray.length > max : false;
+
+  const displayLimit = isOverflowing ? max! - 1 : childrenArray.length;
+  const displayChildren = childrenArray.slice(0, displayLimit);
+  const remaining = total
+    ? total - displayLimit
+    : childrenArray.length - displayLimit;
+
   return (
     <div
       data-slot="avatar-group"
+      data-size={size}
       className={cn(
         "group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background",
-        className
+        className,
       )}
       {...props}
-    />
-  )
+    >
+      {React.Children.map(displayChildren, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child as React.ReactElement<any>, {
+            // @ts-ignore - injecting size for consistency
+            size: child.props.size ?? size,
+          });
+        }
+        return child;
+      })}
+      {isOverflowing && remaining > 0 && (
+        <AvatarGroupCount>+{remaining}</AvatarGroupCount>
+      )}
+    </div>
+  );
 }
 
 function AvatarGroupCount({
@@ -94,13 +128,16 @@ function AvatarGroupCount({
     <div
       data-slot="avatar-group-count"
       className={cn(
-        "relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm text-muted-foreground ring-2 ring-background group-has-data-[size=lg]/avatar-group:size-10 group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3",
-        className
+        "relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm font-medium text-muted-foreground ring-2 ring-background select-none",
+        "group-data-[size=lg]/avatar-group:size-10 group-data-[size=lg]/avatar-group:text-base",
+        "group-data-[size=sm]/avatar-group:size-6 group-data-[size=sm]/avatar-group:text-xs",
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
+
 
 export {
   Avatar,
