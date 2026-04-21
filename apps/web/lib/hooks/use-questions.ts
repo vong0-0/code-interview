@@ -14,10 +14,11 @@ export function useCreateQuestion() {
   });
 }
 
-export function useQuestions(filters?: QuestionFilters) {
+export function useQuestions(filters?: QuestionFilters, options?: any) {
   return useQuery({
     queryKey: questionKeys.list(filters ?? {}),
     queryFn: () => questionService.getAll(filters),
+    ...options,
   });
 }
 

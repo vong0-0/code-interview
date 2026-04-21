@@ -205,8 +205,11 @@ export function Timer({
   const startTimeRef = React.useRef<number | null>(null);
   const pausedAtRef = React.useRef<number>(0);
 
-  const currentMs =
-    mode === "countdown" ? Math.max(0, duration - elapsed) : elapsed;
+  // If controlledStatus is provided, we use duration directly as the source of truth
+  // to avoid double-decrementing when used with synchronized hooks.
+  const currentMs = controlledStatus 
+    ? duration 
+    : (mode === "countdown" ? Math.max(0, duration - elapsed) : elapsed);
 
   // ── Tick logic ──
   React.useEffect(() => {

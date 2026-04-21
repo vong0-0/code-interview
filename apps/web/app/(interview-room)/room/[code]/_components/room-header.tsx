@@ -17,6 +17,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useTimerSync } from "@/hooks/use-timer-sync";
 import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
@@ -30,13 +31,28 @@ import { jetbrainsMono } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 
 interface RoomHeaderProps {
+  roomCode: string;
   title: string;
+  participants: { id: string; name: string; role: string }[];
+  timerStatus: "IDLE" | "RUNNING" | "PAUSED" | "FINISHED";
+  initialTimerRemaining: number | null;
+  isInterviewer: boolean;
 }
 
-export function RoomHeader({ title }: RoomHeaderProps) {
+export function RoomHeader({
+  roomCode,
+  title,
+  participants: activeParticipants,
+  timerStatus: initialTimerStatus,
+  initialTimerRemaining,
+  isInterviewer,
+}: RoomHeaderProps) {
   const router = useRouter();
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const { status, remaining, startTimer, pauseTimer, resumeTimer, stopTimer } = 
+    useTimerSync(roomCode, initialTimerStatus, initialTimerRemaining);
 
   // Force close dropdown when screen size exceeds sm (640px)
   React.useEffect(() => {
@@ -57,20 +73,24 @@ export function RoomHeader({ title }: RoomHeaderProps) {
     router.push("/dashboard");
   };
 
-  const participants = (
-    <>
-      <Avatar>
-        <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>JD</AvatarFallback>
-        <AvatarBadge className="bg-green-500" />
-      </Avatar>
-      <Avatar>
-        <AvatarImage src="https://github.com/leerob.png" />
-        <AvatarFallback>AS</AvatarFallback>
-        <AvatarBadge className="bg-green-500" />
-      </Avatar>
-    </>
-  );
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .substring(0, 2);
+  };
+
+  const participantsList = activeParticipants.map((p) => (
+    <Avatar key={p.id}>
+      <AvatarImage
+        src={`https://api.dicebear.com/7.x/initials/svg?seed=${p.name}`}
+      />
+      <AvatarFallback>{getInitials(p.name)}</AvatarFallback>
+      <AvatarBadge className="bg-green-500" />
+    </Avatar>
+  ));
 
   return (
     <>
@@ -84,17 +104,23 @@ export function RoomHeader({ title }: RoomHeaderProps) {
             )}
           >
             <span className="dark:text-white text-zinc-900">Code</span>
-            <span className="text-primary hidden sm:inline ml-0.5">Interview</span>
+            <span className="text-primary hidden sm:inline ml-0.5">
+              Interview
+            </span>
           </div>
         </SiteHeader.Start>
 
         {/* Center Timer */}
         <SiteHeader.Center>
           <Timer
-            duration={60 * 1000}
+            duration={remaining * 1000}
+            status={status.toLowerCase() as any}
             mode="countdown"
             onFinish={() => console.log("Timer finished")}
-            showControls
+            showControls={isInterviewer}
+            onStart={() => startTimer(60 * 60)} // Default to 1 hour
+            onPause={pauseTimer}
+            onResume={resumeTimer}
           />
         </SiteHeader.Center>
 
@@ -102,7 +128,7 @@ export function RoomHeader({ title }: RoomHeaderProps) {
         <SiteHeader.End className="gap-1 sm:gap-4 items-center">
           {/* Desktop Avatars */}
           <AvatarGroup max={2} size="default" className="hidden sm:flex">
-            {participants}
+            {participantsList}
           </AvatarGroup>
 
           <Separator
@@ -132,7 +158,7 @@ export function RoomHeader({ title }: RoomHeaderProps) {
               </DropdownMenuLabel>
               <div className="px-3 pb-3">
                 <AvatarGroup max={5} size="default">
-                  {participants}
+                  {participantsList}
                 </AvatarGroup>
               </div>
               <DropdownMenuSeparator className="m-0" />

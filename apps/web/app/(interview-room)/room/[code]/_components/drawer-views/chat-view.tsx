@@ -1,54 +1,89 @@
-"use client";
-
+import { useChatSync } from "@/hooks/use-chat-sync";
+import type { ServerChatMessagePayload } from "@code-interview/types";
+import { format } from "date-fns";
+import * as React from "react";
 import { MessageSquare, Send, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function ChatView() {
+interface ChatViewProps {
+  roomCode: string;
+  userName?: string;
+  initialMessages?: ServerChatMessagePayload[];
+}
+
+export function ChatView({ roomCode, userName, initialMessages = [] }: ChatViewProps) {
+  const { messages, sendMessage, messagesEndRef } = useChatSync(roomCode, initialMessages);
+  const [inputText, setInputText] = React.useState("");
+
+  const handleSend = () => {
+    if (!inputText.trim()) return;
+    sendMessage(inputText);
+    setInputText("");
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <div className="flex flex-col h-full space-y-4 min-h-[45vh] animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Chat Messages */}
-      <div className="flex-1 space-y-6 overflow-y-auto pb-4">
-        <div className="flex items-start gap-3">
-          <div className="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 shrink-0 border border-blue-200 dark:border-blue-800">
-            <User className="size-4" />
+      <div className="flex-1 space-y-4 overflow-y-auto pb-4 pr-1 scrollbar-thin scrollbar-thumb-border">
+        {messages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-48 opacity-20 select-none pointer-events-none">
+            <MessageSquare className="size-10 mb-2" />
+            <p className="text-xs font-bold uppercase tracking-widest">No messages yet</p>
           </div>
-          <div className="bg-muted/40 backdrop-blur-sm p-3.5 rounded-2xl rounded-tl-none text-sm max-w-[85%] border border-border/50 shadow-sm">
-            <p className="font-bold text-[9px] text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 shadow-sm">
-              Interviewer
-            </p>
-            <p className="leading-relaxed">
-              Hello! I'm here to support you during this interview. Have you had
-              a chance to look at the problem constraints yet?
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3 flex-row-reverse">
-          <div className="size-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground shrink-0 font-extrabold text-[10px] shadow-lg shadow-primary/20">
-            YOU
-          </div>
-          <div className="bg-primary/5 border border-primary/20 backdrop-blur-sm p-3.5 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm">
-            <p className="leading-relaxed italic opacity-80 underline decoration-primary/30 underline-offset-4">
-              I'm currently thinking about the time complexity. A frequency
-              counter should be O(n), right?
-            </p>
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <span className="text-[9px] font-bold uppercase tracking-[0.3em] text-muted-foreground/40 bg-muted/20 px-3 py-1 rounded-full">
-            New Messages
-          </span>
-        </div>
-
-        <div className="flex items-start gap-3">
-          <div className="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 shrink-0 border border-blue-200 dark:border-blue-800">
-            <User className="size-4" />
-          </div>
-          <div className="bg-muted/40 backdrop-blur-sm p-3.5 rounded-2xl rounded-tl-none text-sm max-w-[85%] border border-border/50 shadow-sm italic">
-            Correct! O(n) is optimal for this problem.
-          </div>
-        </div>
+        ) : (
+          messages.map((message) => {
+            const isMe = message.senderName === userName;
+            
+            return (
+              <div 
+                key={message.id} 
+                className={cn(
+                  "flex items-start gap-3",
+                  isMe ? "flex-row-reverse" : "flex-row"
+                )}
+              >
+                {!isMe && (
+                  <div className="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 shrink-0 border border-blue-200 dark:border-blue-800">
+                    <User className="size-4" />
+                  </div>
+                )}
+                
+                <div className={cn(
+                  "flex flex-col max-w-[85%]",
+                  isMe ? "items-end" : "items-start"
+                )}>
+                  {!isMe && (
+                    <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mb-1 ml-1">
+                      {message.senderName}
+                    </span>
+                  )}
+                  
+                  <div className={cn(
+                    "p-3 rounded-2xl text-sm shadow-sm",
+                    isMe 
+                      ? "bg-primary text-primary-foreground rounded-tr-none" 
+                      : "bg-muted/40 backdrop-blur-sm border border-border/50 rounded-tl-none"
+                  )}>
+                    <p className="leading-relaxed break-words">{message.content}</p>
+                  </div>
+                  
+                  <span className="text-[9px] text-muted-foreground/60 mt-1 mx-1 font-medium">
+                    {format(new Date(message.createdAt), "HH:mm")}
+                  </span>
+                </div>
+              </div>
+            );
+          })
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
@@ -57,7 +92,10 @@ export function ChatView() {
           <div className="relative flex-1">
             <input
               type="text"
-              placeholder="Type a message to the interviewer..."
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Type a message..."
               className="w-full bg-muted/20 border border-border/50 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
             />
             <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none opacity-20 group-focus-within:opacity-100 transition-opacity">
@@ -66,7 +104,9 @@ export function ChatView() {
           </div>
           <Button
             size="icon"
-            className="size-10 rounded-xl shadow-lg shadow-primary/20 transition-transform active:scale-90"
+            onClick={handleSend}
+            disabled={!inputText.trim()}
+            className="size-10 rounded-xl shadow-lg shadow-primary/20 transition-transform active:scale-90 disabled:opacity-50 disabled:grayscale"
           >
             <Send className="size-4" />
           </Button>

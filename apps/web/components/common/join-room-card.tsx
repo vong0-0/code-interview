@@ -14,7 +14,26 @@ import { Label } from "../ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
 
+import { useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+
 export default function JoinRoomCard() {
+  const [name, setName] = useState("");
+  const params = useParams();
+  const router = useRouter();
+  const roomCode = params?.code as string;
+
+  const handleJoin = () => {
+    if (!name.trim() || !roomCode) return;
+    router.push(`/room/${roomCode}?name=${encodeURIComponent(name.trim())}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleJoin();
+    }
+  };
+
   return (
     <Card className="w-full h-full max-w-[550px] py-8 rounded-md">
       <CardHeader>
@@ -34,9 +53,21 @@ export default function JoinRoomCard() {
         <div className="flex flex-col gap-4 w-full mx-auto my-4">
           <div className="space-y-2">
             <Label htmlFor="full-name">Full Name</Label>
-            <Input id="full-name" name="full-name" placeholder="e.g John Doe" />
+            <Input 
+              id="full-name" 
+              name="full-name" 
+              placeholder="e.g John Doe" 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyDown={handleKeyDown}
+              autoFocus
+            />
           </div>
-          <JoinRoomButton className="md:w-auto md:text-nowrap" />
+          <JoinRoomButton 
+            onClick={handleJoin}
+            disabled={!name.trim()}
+            className="md:w-auto md:text-nowrap disabled:opacity-50 disabled:hover:translate-y-0" 
+          />
         </div>
 
         <div className="text-xs text-muted-foreground">

@@ -183,7 +183,27 @@ function FeaturesSection() {
   );
 }
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 function HeroSection({ theme }: { theme: "light" | "dark" }) {
+  const [roomCode, setRoomCode] = useState("");
+  const router = useRouter();
+
+  const handleJoinRoom = () => {
+    const trimmedCode = roomCode.trim();
+    if (!trimmedCode) return;
+    
+    // Use router.push to navigate to the room join page
+    router.push(`/room/${trimmedCode}/join`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleJoinRoom();
+    }
+  };
+
   return (
     <section id="hero-section">
       <FadeIn>
@@ -216,12 +236,20 @@ function HeroSection({ theme }: { theme: "light" | "dark" }) {
               <Input
                 id="room-code-input"
                 placeholder="Enter room code (e.g. ABC-123)"
+                value={roomCode}
+                onChange={(e) => setRoomCode(e.target.value)}
+                onKeyDown={handleKeyDown}
+                className="md:flex-1"
               />
-              <JoinRoomButton className="md:w-auto md:text-nowrap" />
+              <JoinRoomButton 
+                onClick={handleJoinRoom}
+                disabled={!roomCode.trim()}
+                className="md:w-auto md:text-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0" 
+              />
             </div>
 
             <Link
-              href={"/"}
+              href={"/sign-in"}
               className="group md:mt-2 flex items-center justify-center gap-1 md:justify-start"
             >
               <span className="group-hover:text-primary text-foreground/50 text-xs md:text-sm font-medium transition-all duration-300">

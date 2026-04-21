@@ -25,10 +25,12 @@ interface InterviewEditorProps {
   onChange: (value: string) => void;
   language?: string;
   onLanguageChange?: (language: string) => void;
+  onRunCode?: () => void;
+  isExecuting?: boolean;
   className?: string;
 }
 
-import { Play } from "lucide-react";
+import { Play, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function InterviewEditor({
@@ -36,6 +38,8 @@ export function InterviewEditor({
   onChange,
   language = "javascript",
   onLanguageChange,
+  onRunCode,
+  isExecuting = false,
   className,
 }: InterviewEditorProps) {
   const theme = useTheme();
@@ -77,14 +81,21 @@ export function InterviewEditor({
         {/* Run Code Button */}
         <Button 
           size="sm" 
+          onClick={onRunCode}
+          disabled={isExecuting}
           className={cn(
             "h-8 px-3 bg-primary hover:bg-primary/90 text-white font-bold rounded-md shadow-lg shadow-primary/20 transition-all active:scale-95 gap-2",
+            isExecuting && "opacity-80 cursor-not-allowed",
             jetbrainsMono.className
           )}
         >
-          <Play className="size-3 fill-current" />
+          {isExecuting ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : (
+            <Play className="size-3 fill-current" />
+          )}
           <span className="text-[10px] uppercase tracking-widest hidden sm:inline">
-            Run Code
+            {isExecuting ? "Executing..." : "Run Code"}
           </span>
         </Button>
       </div>

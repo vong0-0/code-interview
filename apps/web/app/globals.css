@@ -109,6 +109,9 @@
   --warning: #d97706;
   --code: #2563eb;
 
+  --popover: #ffffff;
+  --popover-foreground: #09090b;
+
   --sidebar: #ffffff;
   --sidebar-foreground: #09090b;
   --sidebar-border: #d4d4d8;
@@ -139,6 +142,9 @@
   --success: #22c55e;
   --warning: #f59e0b;
   --code: #7dd3fc;
+
+  --popover: #1c1c1f;
+  --popover-foreground: #fafafa;
 
   --sidebar: #111113;
   --sidebar-foreground: #fafafa;

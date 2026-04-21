@@ -5,6 +5,7 @@ import { registerCodeHandlers } from "./code.handler"
 import { registerChatHandlers } from "./chat.handler"
 import { registerTimerHandlers } from "./timer.handler"
 import { registerSnapshotHandlers } from "./snapshot.handler"
+import { registerQuestionHandlers } from "./question.handler"
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
   logger.info(`[Socket] connected: ${socket.id}`)
@@ -36,16 +37,6 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
           return
         }
 
-        if (room.participants.length >= 2) {
-          socket.emit("room:error", { message: "Room is full" })
-          return
-        }
-
-        const snapshot = await db.codeSnapshot.findFirst({
-          where: { roomId: room.id, language: room.language },
-          orderBy: { savedAt: "desc" },
-        })
-
         const userId = socket.data.user?.id ?? null
         const actualRole =
           userId && userId === room.interviewerId ? "INTERVIEWER" : "CANDIDATE"
@@ -56,14 +47,48 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
           return
         }
 
-        const participant = await db.roomParticipant.create({
-          data: {
-            roomId: room.id,
-            userId,
-            name: participantName,
-            role: actualRole,
-            isActive: true,
-          },
+        // 1. & 2. Find existing or Atomic Create in a transaction
+        const participant = await db.$transaction(async (tx) => {
+          // Check if user is already an active participant
+          const existing = await tx.roomParticipant.findFirst({
+            where: {
+              roomId: room.id,
+              isActive: true,
+              OR: userId ? [{ userId }] : [{ name: participantName }],
+            },
+          });
+
+          if (existing) return existing;
+
+          // Check if room is full (re-query for accuracy inside transaction)
+          const currentCount = await tx.roomParticipant.count({
+            where: { roomId: room.id, isActive: true },
+          });
+
+          if (currentCount >= 2) {
+            return null;
+          }
+
+          // Create new record
+          return await tx.roomParticipant.create({
+            data: {
+              roomId: room.id,
+              userId,
+              name: participantName,
+              role: actualRole,
+              isActive: true,
+            },
+          });
+        });
+
+        if (!participant) {
+          socket.emit("room:error", { message: "Room is full" })
+          return
+        }
+
+        const snapshot = await db.codeSnapshot.findFirst({
+          where: { roomId: room.id, language: room.language },
+          orderBy: { savedAt: "desc" },
         })
 
         await socket.join(roomCode)
@@ -72,11 +97,40 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
         socket.data.role = actualRole
         socket.data.name = participantName
 
-        io.to(roomCode).emit("room:user-joined", {
+        socket.to(roomCode).emit("room:user-joined", {
           participantId: participant.id,
           name: participantName,
           role: actualRole,
         })
+
+        const currentParticipants = room.participants.map((p) => ({
+          participantId: p.id,
+          name: p.name,
+          role: p.role as any,
+        }))
+
+        // Add the newcomer to the list ONLY if they weren't already in the initial fetch
+        if (!room.participants.some((p) => p.id === participant.id)) {
+          currentParticipants.push({
+            participantId: participant.id,
+            name: participantName,
+            role: actualRole,
+          })
+        }
+
+        const messages = await db.message.findMany({
+          where: { roomId: room.id },
+          orderBy: { createdAt: "asc" },
+        })
+
+        // Calculate actual remaining time if running
+        let actualRemaining = room.timerRemaining
+        if (room.timerStatus === "RUNNING" && room.timerStartedAt) {
+          const elapsed = Math.floor(
+            (Date.now() - room.timerStartedAt.getTime()) / 1000
+          )
+          actualRemaining = Math.max(0, (room.timerRemaining ?? 0) - elapsed)
+        }
 
         socket.emit("room:joined", {
           roomId: room.id,
@@ -86,6 +140,23 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
           role: actualRole,
           language: room.language,
           lastCode: snapshot?.code ?? room.question?.starterCode ?? null,
+          participants: currentParticipants,
+          messages: messages.map((m) => ({
+            id: m.id,
+            senderName: m.senderName,
+            content: m.content,
+            createdAt: m.createdAt.toISOString(),
+          })),
+          question: room.question
+            ? {
+                id: room.question.id,
+                title: room.question.title,
+                description: room.question.description,
+                difficulty: room.question.difficulty as any,
+              }
+            : null,
+          timerStatus: room.timerStatus as any,
+          timerRemaining: actualRemaining,
         })
 
         console.log(`[Socket] ${participantName} joined room ${roomCode}`)
@@ -175,5 +246,6 @@ export function initRoomHandlers(io: Server) {
     registerChatHandlers(io, socket)
     registerTimerHandlers(io, socket)
     registerSnapshotHandlers(io, socket)
+    registerQuestionHandlers(io, socket)
   })
 }

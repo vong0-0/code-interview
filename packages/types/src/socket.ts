@@ -42,6 +42,13 @@ export interface ClientLanguageChangePayload {
   code: string;
 }
 
+export interface ServerQuestionPayload {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+}
+
 // Server → Client
 export interface ServerRoomJoinedPayload {
   roomCode: string;
@@ -50,6 +57,11 @@ export interface ServerRoomJoinedPayload {
   role: ParticipantRole;
   language: string;
   lastCode: string | null;
+  participants: ServerRoomUserJoinedPayload[];
+  messages: ServerChatMessagePayload[];
+  question: ServerQuestionPayload | null;
+  timerStatus: "IDLE" | "RUNNING" | "PAUSED" | "FINISHED";
+  timerRemaining: number | null;
 }
 
 export interface ServerRoomUserJoinedPayload {
