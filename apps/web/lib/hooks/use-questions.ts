@@ -1,5 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { questionService, questionKeys } from "@/lib/services/question.service";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import {
+  questionService,
+  questionKeys,
+} from "@/lib/services/question.service";
+import type { QuestionSummary } from "@code-interview/types";
 import { QuestionFilters } from "../types/question.type";
 import { QuestionFormPayload } from "../schemas/question.schema";
 
@@ -14,7 +24,13 @@ export function useCreateQuestion() {
   });
 }
 
-export function useQuestions(filters?: QuestionFilters, options?: Omit<Parameters<typeof useQuery>[0], "queryKey" | "queryFn">) {
+export function useQuestions<TData = QuestionSummary[]>(
+  filters?: QuestionFilters,
+  options?: Omit<
+    UseQueryOptions<QuestionSummary[], Error, TData>,
+    "queryKey" | "queryFn"
+  >,
+): UseQueryResult<TData, Error> {
   return useQuery({
     queryKey: questionKeys.list(filters ?? {}),
     queryFn: () => questionService.getAll(filters),

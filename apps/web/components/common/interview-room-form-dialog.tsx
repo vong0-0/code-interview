@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -27,8 +28,11 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormField } from "./form-field";
 import { FormSelect } from "./form-select";
+import { FormCombobox } from "./form-combobox";
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard";
 import { ConfirmDialog } from "./confirm-dialog";
+import { useQuestions } from "@/lib/hooks/use-questions";
+import type { QuestionSummary } from "@code-interview/types";
 
 export function InterviewRoomFormDialog({
   mode = "create",
@@ -47,6 +51,17 @@ export function InterviewRoomFormDialog({
   onSubmit?: (values: RoomFormValues) => Promise<void>;
   onCloseRoom?: () => void;
 }) {
+  const { data: questionsResponse, isLoading: isLoadingQuestions } =
+    useQuestions();
+  const questions = questionsResponse || ([] as QuestionSummary[]);
+
+  const questionOptions = React.useMemo(() => {
+    return questions.map((q) => ({
+      label: q.title,
+      value: q.id,
+    }));
+  }, [questions]);
+
   const form = useForm<RoomFormValues>({
     resolver: zodResolver(roomFormSchema),
     defaultValues: {
@@ -210,19 +225,19 @@ export function InterviewRoomFormDialog({
                   <SelectItem value="javascript">JavaScript</SelectItem>
                 </SelectGroup>
               </FormSelect>
-              <FormSelect
+              <FormCombobox
                 id="select-question"
                 name="question"
                 control={form.control}
                 label="Question"
-                placeholder="Select Question"
-              >
-                <SelectGroup>
-                  <SelectLabel>Questions</SelectLabel>
-                  <SelectItem value="auto">Auto</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectGroup>
-              </FormSelect>
+                placeholder={
+                  isLoadingQuestions ? "Loading..." : "Select Question"
+                }
+                searchPlaceholder="Search questions..."
+                emptyMessage="No questions found."
+                options={questionOptions}
+                disabled={isLoadingQuestions}
+              />
             </div>
             {/* TimePicker */}
             <FormField
