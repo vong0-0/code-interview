@@ -106,8 +106,8 @@ function AvatarGroup({
     >
       {React.Children.map(displayChildren, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
-            // @ts-ignore - injecting size for consistency
+          return React.cloneElement(child as React.ReactElement<Record<string, unknown>>, {
+            // @ts-expect-error - injecting size for consistency
             size: child.props.size ?? size,
           });
         }

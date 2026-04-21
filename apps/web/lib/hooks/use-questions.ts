@@ -14,7 +14,7 @@ export function useCreateQuestion() {
   });
 }
 
-export function useQuestions(filters?: QuestionFilters, options?: any) {
+export function useQuestions(filters?: QuestionFilters, options?: Omit<Parameters<typeof useQuery>[0], "queryKey" | "queryFn">) {
   return useQuery({
     queryKey: questionKeys.list(filters ?? {}),
     queryFn: () => questionService.getAll(filters),

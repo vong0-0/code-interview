@@ -20,13 +20,6 @@ export function useQuestionSync(initialQuestion: ServerQuestionPayload | null = 
     };
   }, []);
 
-  // Update when initial question changes (on join room)
-  useEffect(() => {
-    if (initialQuestion && !question) {
-      setQuestion(initialQuestion);
-    }
-  }, [initialQuestion, question]);
-
   return {
     question,
     setQuestion,

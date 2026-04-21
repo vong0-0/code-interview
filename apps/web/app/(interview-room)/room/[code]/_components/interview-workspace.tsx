@@ -12,13 +12,6 @@ import { DifficultyBadge } from "@/components/common/custom-badge";
 import { QuestionView } from "./drawer-views/question-view";
 import { ChatView } from "./drawer-views/chat-view";
 
-const MOCK_OUTPUT: TerminalLine[] = [
-  { type: "command", content: "node main.js" },
-  { type: "stdout", content: 'Testing case 1: "anagram", "nagaram"...' },
-  { type: "success", content: "Test Passed: Output true" },
-  { type: "stdout", content: 'Testing case 2: "rat", "car"...' },
-  { type: "success", content: "Test Passed: Output false" },
-];
 
 import { useQuestionSync } from "@/hooks/use-question-sync";
 import type {
@@ -113,7 +106,7 @@ export function InterviewWorkspace({
     
     // Automatically open terminal if it was minimized
     if (isTerminalMinimized) {
-      setTerminalHeight(lastTerminalHeight.current);
+      setTerminalHeight(280);
       setIsTerminalMinimized(false);
     }
   }, [isExecuting, language, isTerminalMinimized]);
@@ -181,7 +174,6 @@ export function InterviewWorkspace({
 
       if (activeResizer === "terminal") {
         const newHeight = workspaceRect.bottom - e.clientY;
-        const minHeight = 40;
         const maxHeight = workspaceRect.height * 0.8;
 
         if (newHeight < 80) {

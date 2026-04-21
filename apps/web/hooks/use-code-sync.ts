@@ -5,13 +5,6 @@ import { DEBOUNCE_DELAY } from "@/app/constants/debounce";
 
 export function useCodeSync(roomCode: string, initialCode?: string | null) {
   const [code, setCode] = useState(initialCode || "");
-  
-  // Sync initial data when it arrives
-  useEffect(() => {
-    if (initialCode !== undefined && initialCode !== null) {
-      setCode(initialCode);
-    }
-  }, [initialCode]);
 
   // Track if the update is coming from a remote source to avoid emitting it back
   const isRemoteUpdate = useRef(false);

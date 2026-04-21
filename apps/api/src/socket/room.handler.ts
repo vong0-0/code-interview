@@ -6,6 +6,11 @@ import { registerChatHandlers } from "./chat.handler"
 import { registerTimerHandlers } from "./timer.handler"
 import { registerSnapshotHandlers } from "./snapshot.handler"
 import { registerQuestionHandlers } from "./question.handler"
+import { 
+  Difficulty, 
+  TimerStatus, 
+  ParticipantRole 
+} from "../../generated/prisma/client"
 
 export function registerRoomHandlers(io: Server, socket: Socket) {
   logger.info(`[Socket] connected: ${socket.id}`)
@@ -106,7 +111,7 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
         const currentParticipants = room.participants.map((p) => ({
           participantId: p.id,
           name: p.name,
-          role: p.role as any,
+          role: p.role as ParticipantRole,
         }))
 
         // Add the newcomer to the list ONLY if they weren't already in the initial fetch
@@ -152,10 +157,10 @@ export function registerRoomHandlers(io: Server, socket: Socket) {
                 id: room.question.id,
                 title: room.question.title,
                 description: room.question.description,
-                difficulty: room.question.difficulty as any,
+                difficulty: room.question.difficulty as Difficulty,
               }
             : null,
-          timerStatus: room.timerStatus as any,
+          timerStatus: room.timerStatus as TimerStatus,
           timerRemaining: actualRemaining,
         })
 

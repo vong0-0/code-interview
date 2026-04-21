@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { socket } from "@/lib/socket";
 import type {
   ServerRoomJoinedPayload,
@@ -29,35 +29,29 @@ export function useRoomSocket(roomCode: string, name?: string) {
   // Guard to prevent multiple join attempts within the same session/mount
   const isJoinedRef = useRef(false);
 
-  const joinRoom = useCallback(() => {
-    if (!roomCode || isJoinedRef.current) return;
-
-    const lastJoin = joinCooldown.get(roomCode);
-    if (lastJoin && Date.now() - lastJoin < COOLDOWN_DURATION) {
-      console.log(`[Socket] Join throttled for room ${roomCode}`);
-      return;
-    }
-
-    setIsJoining(true);
-    setError(null);
-    isJoinedRef.current = true;
-    joinCooldown.set(roomCode, Date.now());
-
-    if (!socket.connected) {
-      socket.connect();
-    }
-
-    const payload: ClientRoomJoinPayload = { roomCode, name };
-    socket.emit("room:join", payload);
-  }, [roomCode, name]);
-
   useEffect(() => {
-    joinRoom();
+    // Join room on mount (no sync setState — isJoining is already true, error is already null)
+    if (roomCode && !isJoinedRef.current) {
+      const lastJoin = joinCooldown.get(roomCode);
+      if (!lastJoin || Date.now() - lastJoin >= COOLDOWN_DURATION) {
+        isJoinedRef.current = true;
+        joinCooldown.set(roomCode, Date.now());
+
+        if (!socket.connected) {
+          socket.connect();
+        }
+
+        const payload: ClientRoomJoinPayload = { roomCode, name };
+        socket.emit("room:join", payload);
+      } else {
+        console.log(`[Socket] Join throttled for room ${roomCode}`);
+      }
+    }
 
     const onJoined = (payload: ServerRoomJoinedPayload) => {
       setRoomData(payload);
       setIsJoining(false);
-      
+
       // Initialize with all current participants in the room
       setParticipants(
         payload.participants.map((p) => ({
@@ -101,7 +95,7 @@ export function useRoomSocket(roomCode: string, name?: string) {
         socket.disconnect();
       }
     };
-  }, [joinRoom]);
+  }, [roomCode, name]);
 
   return {
     participants,
@@ -115,7 +109,11 @@ export function useRoomSocket(roomCode: string, name?: string) {
     initialTimerRemaining: roomData?.timerRemaining ?? null,
     retry: () => {
       isJoinedRef.current = false;
-      joinRoom();
+      joinCooldown.delete(roomCode);
+      setIsJoining(true);
+      setError(null);
+      if (!socket.connected) socket.connect();
+      socket.emit("room:join", { roomCode, name });
     },
   };
 }

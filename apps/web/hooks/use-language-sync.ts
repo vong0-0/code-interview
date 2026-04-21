@@ -34,16 +34,9 @@ export function useLanguageSync(roomCode: string, initialLanguage?: string | nul
     socket.on("language:changed", onLanguageChanged);
 
     return () => {
-      socket.on("language:changed", onLanguageChanged);
+      socket.off("language:changed", onLanguageChanged);
     };
   }, [onRemoteLanguageChange]);
-
-  // Sync initial data when it arrives
-  useEffect(() => {
-    if (initialLanguage) {
-      setLanguage(initialLanguage);
-    }
-  }, [initialLanguage]);
 
   return {
     language,

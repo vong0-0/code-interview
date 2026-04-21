@@ -10,7 +10,7 @@ import {
   DrawerClose,
 } from "@/components/drawer";
 import { Button } from "@/components/ui/button";
-import { X, FileText, MessageSquare, Plus } from "lucide-react";
+import { X, FileText, MessageSquare } from "lucide-react";
 import { DifficultyBadge } from "@/components/common/custom-badge";
 import {
   DraggableSpeedDial,

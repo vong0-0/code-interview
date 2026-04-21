@@ -3,7 +3,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 import { jetbrainsMono } from "@/lib/fonts";
-import { Terminal, CheckCircle2, Trash2 } from "lucide-react";
+import { CheckCircle2, Trash2 } from "lucide-react";
 
 export interface TerminalLine {
   type: "stdout" | "stderr" | "system" | "success" | "command";

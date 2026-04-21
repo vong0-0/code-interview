@@ -38,13 +38,6 @@ export function useChatSync(roomCode: string, initialMessages: ServerChatMessage
     };
   }, []);
 
-  // Sync initial messages when they arrive (e.g. from late join)
-  useEffect(() => {
-    if (initialMessages && initialMessages.length > 0 && messages.length === 0) {
-      setMessages(initialMessages);
-    }
-  }, [initialMessages, messages.length]);
-
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);

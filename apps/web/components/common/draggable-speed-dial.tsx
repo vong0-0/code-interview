@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
-import { LucideIcon, Plus, X } from "lucide-react";
+import { LucideIcon, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { jetbrainsMono } from "@/lib/fonts";
 import { Button } from "@/components/ui/button";
@@ -99,7 +99,7 @@ export function DraggableSpeedDial({
     }
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const handlePointerUp = () => {
     dragInfo.current.isMouseDown = false;
 
     if (dragInfo.current.hasMoved) {

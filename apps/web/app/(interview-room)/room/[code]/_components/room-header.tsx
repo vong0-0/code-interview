@@ -41,7 +41,6 @@ interface RoomHeaderProps {
 
 export function RoomHeader({
   roomCode,
-  title,
   participants: activeParticipants,
   timerStatus: initialTimerStatus,
   initialTimerRemaining,
@@ -51,7 +50,7 @@ export function RoomHeader({
   const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const { status, remaining, startTimer, pauseTimer, resumeTimer, stopTimer } = 
+  const { status, remaining, startTimer, pauseTimer, resumeTimer } = 
     useTimerSync(roomCode, initialTimerStatus, initialTimerRemaining);
 
   // Force close dropdown when screen size exceeds sm (640px)
@@ -114,7 +113,7 @@ export function RoomHeader({
         <SiteHeader.Center>
           <Timer
             duration={remaining * 1000}
-            status={status.toLowerCase() as any}
+            status={status.toLowerCase() as "idle" | "running" | "paused" | "finished"}
             mode="countdown"
             onFinish={() => console.log("Timer finished")}
             showControls={isInterviewer}

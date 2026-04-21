@@ -3,11 +3,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { socket } from "@/lib/socket";
 
-interface TimerState {
-  remaining: number; // in seconds
-  status: "IDLE" | "RUNNING" | "PAUSED" | "FINISHED";
-}
-
 export function useTimerSync(
   roomCode: string,
   initialStatus: "IDLE" | "RUNNING" | "PAUSED" | "FINISHED" = "IDLE",
@@ -94,12 +89,6 @@ export function useTimerSync(
       stopLocalTimer();
     }
   }, [status, startLocalTimer, stopLocalTimer]);
-
-  useEffect(() => {
-     if (initialRemaining !== null) {
-        setRemaining(initialRemaining);
-     }
-  }, [initialRemaining]);
 
   const startTimer = (duration: number) => {
     socket.emit("timer:start", { roomCode, duration });
