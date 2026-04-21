@@ -28,6 +28,14 @@ export function useRoomSocket(roomCode: string, name?: string) {
 
   // Guard to prevent multiple join attempts within the same session/mount
   const isJoinedRef = useRef(false);
+  const roleRef = useRef<string | null>(null);
+
+  // Sync role to ref to avoid closure issues in listeners
+  useEffect(() => {
+    if (roomData?.role) {
+      roleRef.current = roomData.role;
+    }
+  }, [roomData?.role]);
 
   useEffect(() => {
     // Join room on mount (no sync setState — isJoining is already true, error is already null)
@@ -79,16 +87,26 @@ export function useRoomSocket(roomCode: string, name?: string) {
       setIsJoining(false);
     };
 
+    const onRoomClosed = (payload: { reason?: string }) => {
+      console.log("[Socket] Received room:closed", payload.reason);
+      if (roleRef.current !== "INTERVIEWER") {
+        setError(payload.reason || "The interview has ended and the room is now closed.");
+        setIsJoining(false);
+      }
+    };
+
     socket.on("room:joined", onJoined);
     socket.on("room:user-joined", onUserJoined);
     socket.on("room:user-left", onUserLeft);
     socket.on("room:error", onRoomError);
+    socket.on("room:closed", onRoomClosed);
 
     return () => {
       socket.off("room:joined", onJoined);
       socket.off("room:user-joined", onUserJoined);
       socket.off("room:user-left", onUserLeft);
       socket.off("room:error", onRoomError);
+      socket.off("room:closed", onRoomClosed);
       
       isJoinedRef.current = false; // Reset guard on unmount
       if (socket.connected) {

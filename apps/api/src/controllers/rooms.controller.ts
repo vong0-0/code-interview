@@ -155,9 +155,20 @@ export async function updateRoom(req: Request, res: Response) {
       })
 
       const { getIO } = await import("../socket/socket.js")
-      getIO()
-        .to(code)
-        .emit("room:closed", { reason: "Room closed by interviewer" })
+      const io = getIO()
+      
+      // Notify everyone first
+      io.to(code).emit("room:closed", { reason: "Room closed by interviewer" })
+      
+      // Fetch all sockets in this room and kick non-interviewers
+      const sockets = await io.in(code).fetchSockets()
+      for (const socket of sockets) {
+        if (socket.data.role !== "INTERVIEWER") {
+          socket.leave(code)
+          // Optional: we can also send a specialized kick event if needed, 
+          // but leaving the room prevents further data synchronization.
+        }
+      }
     }
 
     res.json({ room: updated })

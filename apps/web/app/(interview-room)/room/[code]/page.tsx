@@ -10,10 +10,13 @@ import { RoomActionLayer } from "./_components/room-action-layer";
 
 import { ArrowLeft, RotateCcw } from "lucide-react";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 export default function Page(props: { params: Promise<{ code: string }> }) {
   const { code } = React.use(props.params);
+  const router = useRouter();
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
   const name = searchParams.get("name") || undefined;
 
@@ -60,7 +63,7 @@ export default function Page(props: { params: Promise<{ code: string }> }) {
             variant="outline"
             size="lg"
             className="h-auto py-3 px-6"
-            onClick={() => (window.location.href = "/")}
+            onClick={() => router.push(session ? "/dashboard" : "/")}
           >
             <ArrowLeft className="mr-2 size-4" />
             Back to Home
